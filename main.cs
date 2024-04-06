@@ -1,5 +1,4 @@
-/*Notes :		1. Not updating deleted booking seat status from 'R' to 'A'		
-			 			2. if flight deleted, related bookings also be deleted.
+/*Notes :		
 */
 using System;
 using System.Collections.Generic;
@@ -25,26 +24,33 @@ class Flight																//Flight Class
 
     public void newFlight()
     {
-        Console.WriteLine("Enter your destination: ");
+        Console.Write("Enter your destination: ");
         flightDestination = Console.ReadLine();
         flightCode = "FL" + random.Next(1000, 9999);
         for (int i = 0; i < seats.Length; i++)
             seats[i] = 'A';
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("Flight " + flightCode + " to " + flightDestination + " created with 10 seats.");
+        Console.WriteLine("\n Flight " + flightCode + " to " + flightDestination + " created with 10 seats.");
         Console.ResetColor();
     }
 
     public void displayFlight()
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write("Flight Code: " + flightCode);
+        Console.Write("Flight Code: ");
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.Write(flightCode);
         Console.ResetColor();
-        Console.WriteLine("		Flight Destination: " + flightDestination);
+        Console.WriteLine("		Flight Destination: ");
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.Write(flightDestination);
+				Console.ResetColor();
         Console.Write("Available seats: ");
         List<int> list = availableSeats();
+				Console.ForegroundColor = ConsoleColor.Yellow;
         foreach (int seat in list)
             Console.Write(seat+1 + " ");
+
+				Console.ResetColor();
     }
 }
 
@@ -122,11 +128,11 @@ class Airline																		//Airline class
 			int id = newBooking.newBooking(flightcode,seatno);
 	        BookingsList.Add(newBooking);
 	        Console.ForegroundColor = ConsoleColor.Green;
-	        Console.WriteLine("Booking No. {0} Added successfully !", id);
+	        Console.WriteLine("\n Booking No. {0} Added successfully !", id);
 	        Console.ResetColor();
 		}else{							//////////////////////////////////////////////////// improve this
 			Console.ForegroundColor = ConsoleColor.Red;
-			Console.WriteLine("Seat not Available !");
+			Console.WriteLine("\n Seat not Available !");
 			Console.ResetColor();
 		}
     }
@@ -146,6 +152,11 @@ class Airline																		//Airline class
             {
                 Console.WriteLine(i + 1);
                 BookingsList[i].displayBooking();
+								foreach(Flight flight in FlightsList){
+									if(flight.flightCode == BookingsList[i].flightcode){
+										Console.WriteLine("Destination: "+flight.flightDestination);
+									}
+								}
                 Console.WriteLine("-----------------");
             }
         }
@@ -175,7 +186,7 @@ class Airline																		//Airline class
         // }
     }
 
-    public void searchBooking(int bookingID)			//search booking with booking id
+    public void searchBooking(int bookingID)					//search booking with booking id
     {
         Boolean found = false;
         foreach (Booking booking in BookingsList)
@@ -197,7 +208,7 @@ class Airline																		//Airline class
         }
     }
 
-    public void searchFlight(String flightCode)			//search flight with flight code
+    public void searchFlight(String flightCode)					//search flight with flight code
     {
         Boolean found = false;
         foreach (Flight flight in FlightsList)
@@ -219,7 +230,7 @@ class Airline																		//Airline class
         }
     }
 
-    public void deleteBooking(int bookingID)			//delete booking with booking id
+    public void deleteBooking(int bookingID)					//delete booking with booking id
     {
         Boolean found = false;
         foreach (Booking booking in BookingsList)
@@ -227,6 +238,14 @@ class Airline																		//Airline class
             if (booking.BookingID == bookingID)
             {
                 BookingsList.Remove(booking);
+								foreach(Flight flight in FlightsList)
+								{
+									if(flight.flightCode == booking.flightcode)
+									{
+										flight.seats[booking.seatNo] = 'A';
+										break;
+									}
+								}
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Booking Deleted successfully !");
                 Console.ResetColor();
@@ -242,14 +261,22 @@ class Airline																		//Airline class
         }
     }
 
-    public void deleteFlight(string flightCode)			//delete flight with flight code
+    public void deleteFlight(string flightCode)					//delete flight with flight code
     {
         Boolean found = false;
         foreach (Flight flight in FlightsList)
         {
             if (flight.flightCode == flightCode)
             {
-                FlightsList.Remove(flight);
+                FlightsList.Remove(flight);								//deleting flight from system data
+								foreach(Booking booking in BookingsList)		//deleting bookings related to deleted flight
+								{	
+									if(booking.flightcode == flightCode)
+									{	
+										BookingsList.Remove(booking);
+										break;
+									}
+								}
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Flight Deleted successfully !");
                 Console.ResetColor();
@@ -277,39 +304,65 @@ class Program														//program class
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n\n		-----Airline Resrvation system-----\n");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("No. of Bookings in the system: {0}\n", airline.bookingsCount());
-            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Flights Available in the system: {0}\n", airline.flightsCount());
+						Console.ForegroundColor = ConsoleColor.Red;
+						Console.WriteLine("No. of Bookings in the system: {0}\n", airline.bookingsCount());
             Console.ResetColor();
+					
             airline.displayAllFlights();
-
-            Console.WriteLine("\n Booking Operations	------");			////////////////// this should be flight operations
-            Console.WriteLine("1. Add New Booking");
-            Console.WriteLine("2. Display All Bookings");
-            Console.WriteLine("3. Search Booking");
-            Console.WriteLine("4. Delete Booking");
-
+						Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n Flight Operations	------");				////////////////// this should be booking operations
-            Console.WriteLine("5. Add New Flight");
-            Console.WriteLine("6. Search Flight");
-            Console.WriteLine("7. Delete Flight");
-            Console.Write("Enter your choice: ");
-
+						Console.ResetColor();
+						Console.WriteLine("1. Add New Flight");
+            Console.WriteLine("2. Search Flight");
+            Console.WriteLine("3. Delete Flight");
+						
+						Console.ForegroundColor = ConsoleColor.Blue;
+						Console.WriteLine("\n Booking Operations	------");			////////////////// this should be flight operations
+						Console.ResetColor();
+						Console.WriteLine("4. Add New Booking");
+						Console.WriteLine("5. Display All Bookings");
+						Console.WriteLine("6. Search Booking");
+						Console.WriteLine("7. Delete Booking");
+						Console.Write("\n Enter your choice: ");
             switch (Console.ReadLine())
             {
-                case "1":
+						case "1":
+										Console.ForegroundColor = ConsoleColor.Blue;
+										Console.WriteLine("\nSystem response -----\n");
+										Console.ResetColor();
+										airline.addNewFlight();
+										break;
+						case "2":
+										Console.ForegroundColor = ConsoleColor.Blue;
+										Console.WriteLine("\nSystem response -----\n");
+										Console.ResetColor();
+										Console.Write("Enter the Flight code: ");
+										string code = Console.ReadLine();
+										airline.searchFlight(code);
+										break;
+						case "3":
+										Console.ForegroundColor = ConsoleColor.Blue;
+										Console.WriteLine("\nSystem response -----\n");
+										Console.ResetColor();
+										Console.Write("Enter the Flight code: ");
+										code = Console.ReadLine();
+										airline.deleteFlight(code);
+										break;
+							
+						case "4":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
                     airline.addNewBooking();
                     break;
-                case "2":
+						case "5":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
                     airline.displayAllBookings();
                     break;
-                case "3":
+						case "6":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
@@ -317,7 +370,7 @@ class Program														//program class
                     int id = Convert.ToInt32(Console.ReadLine());
                     airline.searchBooking(id);
                     break;
-                case "4":
+						case "7":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
@@ -326,29 +379,6 @@ class Program														//program class
                     airline.deleteBooking(id);
                     break;
 
-
-                case "5":
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("\nSystem response -----\n");
-                    Console.ResetColor();
-                    airline.addNewFlight();
-                    break;
-                case "6":
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("\nSystem response -----\n");
-                    Console.ResetColor();
-                    Console.Write("Enter the Flight code: ");
-                    string code = Console.ReadLine();
-                    airline.searchFlight(code);
-                    break;
-                case "7":
-                    Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("\nSystem response -----\n");
-                    Console.ResetColor();
-                    Console.Write("Enter the Flight code: ");
-                    code = Console.ReadLine();
-                    airline.deleteFlight(code);
-                    break;
                 default:
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
