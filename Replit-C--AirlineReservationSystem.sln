@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34009.444
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Replit-C--AirlineReservationSystem", "Replit-C--AirlineReservationSystem.csproj", "{497B7B8A-49DD-4D16-A1C6-BA196EB8C622}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{497B7B8A-49DD-4D16-A1C6-BA196EB8C622}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{497B7B8A-49DD-4D16-A1C6-BA196EB8C622}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{497B7B8A-49DD-4D16-A1C6-BA196EB8C622}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{497B7B8A-49DD-4D16-A1C6-BA196EB8C622}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C318C2B3-17A2-4583-98B5-CCCCCD4D5EA5}
+	EndGlobalSection
+EndGlobal
