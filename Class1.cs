@@ -1,4 +1,4 @@
-﻿/*Notes :		
+/*Notes :		1. Update seats in databse after booking and deleting
 
 */
 using System;
@@ -157,7 +157,40 @@ class Airline																		//Airline class
             connection.Close();
         }
     }
+    //UPDATE `flights` SET `Destination` = 'Duba' WHERE `flights`.`FlightCode` = 'FL3333';
 
+    public void seatsDatabaseUpdation(char[] seatsUpdated)
+    {
+        using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
+        {
+            connection.Open();
+            string query = "INSERT INTO bookings (BookingID, Name, SeatNo, FlightCode) VALUES (@BookingID, @Name, @SeatNo, @FlightCode)";
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@BookingID", id);
+            command.Parameters.AddWithValue("@Name", newBooking.name);
+            command.Parameters.AddWithValue("@SeatNo", newBooking.seatNo);
+            command.Parameters.AddWithValue("@FlightCode", newBooking.flightcode);
+
+            int rowsAffected = command.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Data Inserted successfully.");
+                Console.ResetColor();
+                updateBookings();      //updating system collection with updated data
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Failed to insert data.");
+                Console.ResetColor();
+            }
+            connection.Close();
+        }
+    }
     public bool seatAvailability(string flightcode, int seatno)
     {               //Chceking seat availablity
 
@@ -167,11 +200,14 @@ class Airline																		//Airline class
             {
                 if (flight.availableSeats().Contains(seatno))
                 {
-                    flight.seats[seatno] = 'R';
+                    flight.seats[seatno] = 'R';////////////////////////////////////////////////////////////
+                    
                     return true;
                 }
+
             }
         }
+
         return false;
     }
 
@@ -208,7 +244,7 @@ class Airline																		//Airline class
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine("Data Inserted successfully.");
                     Console.ResetColor();
-                    updateBooks();      //updating system collection with updated data
+                    updateBookings();      //updating system collection with updated data
                 }
                 else
                 {
@@ -235,7 +271,35 @@ class Airline																		//Airline class
     {
         Flight newFlight = new Flight();
         newFlight.newFlight();
-        FlightsList.Add(newFlight);
+        using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
+        {
+            connection.Open();
+            string query = "INSERT INTO flights (FlightCode, Destination, AvailableSeats) VALUES (@FlightCode, @Destination, @AvailableSeats)";
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FlightCode", newFlight.flightCode);
+            command.Parameters.AddWithValue("@Destination", newFlight.flightDestination);
+            command.Parameters.AddWithValue("@AvailableSeats", newFlight.seats);
+
+            int rowsAffected = command.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Flight Data Inserted successfully.");
+                Console.ResetColor();
+                updateFlights();      //updating system collection with updated data
+            }
+            else
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Failed to insert data.");
+                Console.ResetColor();
+            }
+            connection.Close();
+        }
+        
     }
 
     public void displayAllBookings()			// display all bookings
