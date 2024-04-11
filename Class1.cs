@@ -1,10 +1,12 @@
-/*Notes :		1. Update seats in databse after booking and deleting
+/*Notes :		1. Seperate out database functions to different class file
 
 */
 using System;
 using System.Data;
 using MySql.Data.MySqlClient;
 using System.Collections.Generic;
+using Mysqlx.Crud;
+using System.Security.Policy;
 
 class Flight																//Flight Class
 {
@@ -14,7 +16,7 @@ class Flight																//Flight Class
 
     private static Random random = new Random();
 
-    public List<int> availableSeats()
+    public List<int> availableSeats()               //getting the list of available seats of a flight
     {
         List<int> count = new List<int>();
         for (int i = 0; i < seats.Length; i++)
@@ -25,11 +27,11 @@ class Flight																//Flight Class
         return count;
     }
 
-    public void newFlight()
+    public void newFlight()                     //to create a new flight
     {
         Console.Write("Enter your destination: ");
         flightDestination = Console.ReadLine();
-        flightCode = "FL" + random.Next(1000, 9999);
+        flightCode = "FL" + random.Next(1000, 9999);            //generating a random unique flight code
         for (int i = 0; i < seats.Length; i++)
             seats[i] = 'A';
         Console.ForegroundColor = ConsoleColor.Green;
@@ -37,15 +39,15 @@ class Flight																//Flight Class
         Console.ResetColor();
     }
 
-    public void displayFlight()
+    public void displayFlight()             //to display flighs(s) details in the header pf program
     {
         Console.Write("Flight Code: ");
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.Write(flightCode);
         Console.ResetColor();
-        Console.WriteLine("		Flight Destination: ");
+        Console.Write("		Flight Destination: ");
         Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.Write(flightDestination);
+        Console.WriteLine(flightDestination);
         Console.ResetColor();
         Console.Write("Available seats: ");
         List<int> list = availableSeats();
@@ -66,9 +68,9 @@ class Booking														//Booking class
 
     private static Random random = new Random();
 
-    public int newBooking(string flightcode, int seatno)
+    public int newBooking(string flightcode, int seatno)        //to create new booking
     {
-        BookingID = new Random().Next(100, 500);
+        BookingID = new Random().Next(100, 500);            //generating random unique booking id
         this.flightcode = flightcode;
         Console.Write("Enter your name: ");
         name = Console.ReadLine();
@@ -76,7 +78,7 @@ class Booking														//Booking class
         return BookingID;
     }
 
-    public void displayBooking()
+    public void displayBooking()                    //to display bookings when called
     {
         Console.WriteLine("Booking ID: " + BookingID);
         Console.WriteLine("Flight Code: " + flightcode);
@@ -87,11 +89,11 @@ class Booking														//Booking class
 
 class Airline																		//Airline class
 {
-    List<Flight> FlightsList = new List<Flight>();
-    List<Booking> BookingsList = new List<Booking>();
+    List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
+    List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
 
-    string FLIGHTSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";
-    string BOOKINGSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";
+    string FLIGHTSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";             //database connection string for Flights database
+    string BOOKINGSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";             //database connection string for Bookings database
 
     public int flightsCount()       								//FLIGHTs count
     {
@@ -101,9 +103,7 @@ class Airline																		//Airline class
     {
         return BookingsList.Count;
     }
-    /// <summary>
-    /// ////////////////////////////////////DATABASE FUNCTIONS//////////////////////////////////////
-    /// </summary>
+
 
     public void updateFlights()
     {
@@ -112,7 +112,7 @@ class Airline																		//Airline class
         using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
         {
             connection.Open();
-            string query = "SELECT * FROM flights";
+            string query = "SELECT * FROM flights";                         //Query to read data from flights database
             MySqlCommand command = new MySqlCommand(query, connection);
             using (MySqlDataReader reader = command.ExecuteReader())
             {
@@ -122,8 +122,8 @@ class Airline																		//Airline class
                     flight.flightCode = reader.GetString(0);
                     flight.flightDestination = reader.GetString(1);
                     flight.seats = reader.GetString(2).ToCharArray();
-                    FlightsList.Add(flight);
-                    //Console.WriteLine(reader["BookID"] + " " + reader["Title"]+" " + reader["Author"]); // Replace with your column names
+
+                    FlightsList.Add(flight);                      //adding each row of database as flight object in flights' system collection
 
                 }
             }
@@ -138,7 +138,7 @@ class Airline																		//Airline class
         using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
         {
             connection.Open();
-            string query = "SELECT * FROM bookings";
+            string query = "SELECT * FROM bookings";                         //Query to read data from bookings database
             MySqlCommand command = new MySqlCommand(query, connection);
             using (MySqlDataReader reader = command.ExecuteReader())
             {
@@ -149,50 +149,43 @@ class Airline																		//Airline class
                     booking.name = reader.GetString(1);
                     booking.seatNo = reader.GetInt32(2);
                     booking.flightcode = reader.GetString(3);
-                    BookingsList.Add(booking);
-                    //Console.WriteLine(reader["BookID"] + " " + reader["Title"]+" " + reader["Author"]); // Replace with your column names
+
+                    BookingsList.Add(booking);                      //adding each row of database as booking object in bookings' system collection
 
                 }
             }
             connection.Close();
         }
     }
-    //UPDATE `flights` SET `Destination` = 'Duba' WHERE `flights`.`FlightCode` = 'FL3333';
 
-    public void seatsDatabaseUpdation(char[] seatsUpdated)
+    public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
     {
         using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
         {
             connection.Open();
-            string query = "INSERT INTO bookings (BookingID, Name, SeatNo, FlightCode) VALUES (@BookingID, @Name, @SeatNo, @FlightCode)";
+            string query = "UPDATE `flights` SET `AvailableSeats` = @AvailableSeats WHERE `flights`.`FlightCode` = @FlightCode";
+
 
             MySqlCommand command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@BookingID", id);
-            command.Parameters.AddWithValue("@Name", newBooking.name);
-            command.Parameters.AddWithValue("@SeatNo", newBooking.seatNo);
-            command.Parameters.AddWithValue("@FlightCode", newBooking.flightcode);
+            command.Parameters.AddWithValue("@FlightCode", flightcode);
+            command.Parameters.AddWithValue("@AvailableSeats", new string(seatsUpdated));
 
             int rowsAffected = command.ExecuteNonQuery();
+            connection.Close();
             if (rowsAffected > 0)
             {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Data Inserted successfully.");
-                Console.ResetColor();
                 updateBookings();      //updating system collection with updated data
+                updateFlights();
+                return true;
             }
             else
             {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Failed to insert data.");
-                Console.ResetColor();
+                return false;
             }
-            connection.Close();
         }
     }
-    public bool seatAvailability(string flightcode, int seatno)
-    {               //Chceking seat availablity
+    public char seatAvailability(string flightcode, int seatno)               //Chceking seat availablity and marking it (R)eserved it for booking
+    {
 
         foreach (Flight flight in FlightsList)
         {
@@ -200,15 +193,16 @@ class Airline																		//Airline class
             {
                 if (flight.availableSeats().Contains(seatno))
                 {
-                    flight.seats[seatno] = 'R';////////////////////////////////////////////////////////////
-                    
-                    return true;
+                    flight.seats[seatno] = 'R';
+                    if (!seatsDatabaseUpdation(flight.seats, flightcode))
+                    {
+                        return 'D';             //  D = Database updation Error
+                    }
+                    return 'G';             //  G = all Good with Seats updation
                 }
-
             }
         }
-
-        return false;
+        return 'S';             //  S = Seat not available
     }
 
 
@@ -216,41 +210,39 @@ class Airline																		//Airline class
     {
         Booking newBooking = new Booking();
         string flightcode; int seatno;
+        char seatAvailabilityStatus;
 
         Console.Write("Enter the flight code: ");
         flightcode = Console.ReadLine();
         Console.Write("Enter the seat no.: ");
         seatno = Convert.ToInt32(Console.ReadLine());
         seatno--;
-        if (seatAvailability(flightcode, seatno))
+        seatAvailabilityStatus = seatAvailability(flightcode, seatno);          //chcek seat availability
+
+        if (seatAvailabilityStatus == 'G')
         {
             int id = newBooking.newBooking(flightcode, seatno);
             //BookingsList.Add(newBooking);
             using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
-            { 
+            {
                 connection.Open();
-                string query = "INSERT INTO bookings (BookingID, Name, SeatNo, FlightCode) VALUES (@BookingID, @Name, @SeatNo, @FlightCode)";
+                string query = "INSERT INTO bookings (BookingID, Name, SeatNoIndex, FlightCode) VALUES (@BookingID, @Name, @SeatNoIndex, @FlightCode)";
 
                 MySqlCommand command = new MySqlCommand(query, connection);
                 command.Parameters.AddWithValue("@BookingID", id);
                 command.Parameters.AddWithValue("@Name", newBooking.name);
-                command.Parameters.AddWithValue("@SeatNo", newBooking.seatNo);
+                command.Parameters.AddWithValue("@SeatNoIndex", newBooking.seatNo);
                 command.Parameters.AddWithValue("@FlightCode", newBooking.flightcode);
 
                 int rowsAffected = command.ExecuteNonQuery();
                 if (rowsAffected > 0)
-                {
-                    Console.WriteLine();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Data Inserted successfully.");
-                    Console.ResetColor();
                     updateBookings();      //updating system collection with updated data
-                }
+
                 else
                 {
                     Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Failed to insert data.");
+                    Console.WriteLine(" Database Bk Updation Error !");
                     Console.ResetColor();
                 }
                 connection.Close();
@@ -259,10 +251,16 @@ class Airline																		//Airline class
             Console.WriteLine("\n Booking No. {0} Added successfully !", id);
             Console.ResetColor();
         }
-        else
-        {                           //////////////////////////////////////////////////// improve this
+        else if (seatAvailabilityStatus == 'S')
+        {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\n Seat not Available !");
+            Console.ResetColor();
+        }
+        else if (seatAvailabilityStatus == 'D')
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\n Database Ft Updation Error !");
             Console.ResetColor();
         }
     }
@@ -299,7 +297,7 @@ class Airline																		//Airline class
             }
             connection.Close();
         }
-        
+
     }
 
     public void displayAllBookings()			// display all bookings
@@ -395,21 +393,61 @@ class Airline																		//Airline class
         Boolean found = false;
         foreach (Booking booking in BookingsList)
         {
-            if (booking.BookingID == bookingID)
+            if (booking.BookingID == bookingID)         //bookingID exists or not
             {
-                BookingsList.Remove(booking);
+                found = true;
                 foreach (Flight flight in FlightsList)
                 {
                     if (flight.flightCode == booking.flightcode)
                     {
-                        flight.seats[booking.seatNo] = 'A';
+
+                        using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))      //deleting booking from database
+                        {
+                            connection.Open();
+                            string query = "DELETE FROM `bookings` WHERE `BookingID` = @BookingID";
+
+                            MySqlCommand command = new MySqlCommand(query, connection);
+                            command.Parameters.AddWithValue("@BookingID", booking.BookingID);
+
+                            int rowsAffected = command.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                Console.WriteLine();
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Booking Deleted from Bk successfully.");
+                                Console.ResetColor();
+                                updateBookings();      //updating system collection with updated data
+                            }
+                            else
+                            {
+                                Console.WriteLine();
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("Database Bk Updation Error !");
+                                Console.ResetColor();
+                            }
+                            connection.Close();
+
+                        }
+
+                        flight.seats[booking.seatNo] = 'A';         //updating seat status in system collection of seats
+
+                        if (seatsDatabaseUpdation(flight.seats, flight.flightCode))     //Updating available seats in database with system collection 
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("Booking Deleted from Ft successfully !");
+                            Console.ResetColor();
+
+                        }
+                        else
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("\n Database Ft Updation Error !");
+                            Console.ResetColor();
+
+                        }
                         break;
                     }
                 }
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Booking Deleted successfully !");
-                Console.ResetColor();
-                found = true;
                 break;
             }
         }
@@ -421,25 +459,86 @@ class Airline																		//Airline class
         }
     }
 
+    public string deleteFlightDatabase(string flightcode)           //Delete Flight data fropm flights database
+    {
+        using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
+        {
+            connection.Open();
+            string query = "DELETE FROM `flights` WHERE `FlightCode` = @FlightCode";
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FlightCode", flightcode);
+
+            int rowsAffected = command.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {                                        //if flight deleted successfully
+                updateFlights();                             //updating system collection with updated data
+                connection.Close();
+                return "FD";
+            }
+            else
+            {                                                       //if error occurs in flight deletion
+                connection.Close();
+                return "FE";
+            }
+        }
+    }
+
+    public string deleteFt_BookingsDatabase(string flightcode)           //Delete Bookings related to deleted flight
+    {
+        using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
+        {
+            connection.Open();
+            string query = "DELETE FROM `bookings` WHERE `FlightCode` = @FlightCode";
+
+            MySqlCommand command = new MySqlCommand(query, connection);
+            command.Parameters.AddWithValue("@FlightCode", flightcode);
+
+            int rowsAffected = command.ExecuteNonQuery();
+            if (rowsAffected > 0)
+            {                           //if bookings deleted successfully
+                updateBookings();                   //updating system collection with updated data
+                connection.Close();
+                return "BD";
+            }
+            /*else
+            {
+                connection.Close();
+                return "BE";
+            }*/
+            return "BD";            //if there are NO bookings related to deleted flight
+        }
+    }
+
     public void deleteFlight(string flightCode)					//delete flight with flight code
     {
         Boolean found = false;
+
         foreach (Flight flight in FlightsList)
         {
-            if (flight.flightCode == flightCode)
+            if (flight.flightCode == flightCode)            //chceking whether flight exists or not
             {
-                FlightsList.Remove(flight);                             //deleting flight from system data
-                foreach (Booking booking in BookingsList)       //deleting bookings related to deleted flight
+                if (deleteFlightDatabase(flightCode) == "FD")       //if found, delete flight data from Flights database
                 {
-                    if (booking.flightcode == flightCode)
+                    if (deleteFt_BookingsDatabase(flightCode) == "BD")      //delete bookings related to deleted flight
                     {
-                        BookingsList.Remove(booking);
-                        break;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Flight Deleted Successfully with all Related Bookings!");
+                        Console.ResetColor();
                     }
+                    /*else              //Not neccessary deleted flight would have related bookings 
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n Database Bk Updation Error !");
+                        Console.ResetColor();
+                    }*/
                 }
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Flight Deleted successfully !");
-                Console.ResetColor();
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n Database Ft Updation Error !");
+                    Console.ResetColor();
+                }
                 found = true;
                 break;
             }
@@ -459,29 +558,30 @@ class Program														//program class
     {
         Airline airline = new Airline();
 
-        airline.updateFlights();
-        airline.updateBookings();
+        airline.updateFlights();        //updating system collection of flights with database data
+        airline.updateBookings();        //updating system collection of bookings with database data
 
         while (true)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n\n		-----Airline Resrvation system-----\n");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Flights Available in the system: {0}\n", airline.flightsCount());
+            Console.WriteLine("Flights Available in the system: {0}\n", airline.flightsCount());            //desplaying system count of flights' collection
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("No. of Bookings in the system: {0}\n", airline.bookingsCount());
+            Console.WriteLine("No. of Bookings in the system: {0}\n", airline.bookingsCount());            //desplaying system count of bookings' collection
             Console.ResetColor();
 
-            airline.displayAllFlights();
+            airline.displayAllFlights();                                  //displaying flights' details in header of program
+
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\n Flight Operations	------");               ////////////////// this should be booking operations
+            Console.WriteLine("\n Flight Operations	------");
             Console.ResetColor();
             Console.WriteLine("1. Add New Flight");
             Console.WriteLine("2. Search Flight");
             Console.WriteLine("3. Delete Flight");
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\n Booking Operations	------");           ////////////////// this should be flight operations
+            Console.WriteLine("\n Booking Operations	------");
             Console.ResetColor();
             Console.WriteLine("4. Add New Booking");
             Console.WriteLine("5. Display All Bookings");
@@ -490,11 +590,12 @@ class Program														//program class
             Console.Write("\n Enter your choice: ");
             switch (Console.ReadLine())
             {
+                /////////////////////////////Fliight Operations
                 case "1":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
-                    airline.addNewFlight();
+                    airline.addNewFlight();                     //new flight
                     break;
                 case "2":
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -502,7 +603,7 @@ class Program														//program class
                     Console.ResetColor();
                     Console.Write("Enter the Flight code: ");
                     string code = Console.ReadLine();
-                    airline.searchFlight(code);
+                    airline.searchFlight(code);                 //search specific flight with flight code
                     break;
                 case "3":
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -510,20 +611,20 @@ class Program														//program class
                     Console.ResetColor();
                     Console.Write("Enter the Flight code: ");
                     code = Console.ReadLine();
-                    airline.deleteFlight(code);
+                    airline.deleteFlight(code);                 //delete flight with flight code
                     break;
-
+                ////////////////////////Booking Operations
                 case "4":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
-                    airline.addNewBooking();
+                    airline.addNewBooking();                     //new booking
                     break;
                 case "5":
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\nSystem response -----\n");
                     Console.ResetColor();
-                    airline.displayAllBookings();
+                    airline.displayAllBookings();               //display all bookings
                     break;
                 case "6":
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -531,7 +632,7 @@ class Program														//program class
                     Console.ResetColor();
                     Console.Write("Enter the BookingId number: ");
                     int id = Convert.ToInt32(Console.ReadLine());
-                    airline.searchBooking(id);
+                    airline.searchBooking(id);                  //search specific booking with booking id
                     break;
                 case "7":
                     Console.ForegroundColor = ConsoleColor.Blue;
@@ -539,7 +640,7 @@ class Program														//program class
                     Console.ResetColor();
                     Console.Write("Enter the BookingId number: ");
                     id = Convert.ToInt32(Console.ReadLine());
-                    airline.deleteBooking(id);
+                    airline.deleteBooking(id);                  //delete booking with booking id
                     break;
 
                 default:
