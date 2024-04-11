@@ -7,6 +7,10 @@ using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using Mysqlx.Crud;
 using System.Security.Policy;
+using Replit_C__AirlineReservationSystem.DatabaseOperations;
+using Replit_C__AirlineReservationSystem;
+using System.Collections;
+using System.Linq;
 
 class Flight																//Flight Class
 {
@@ -92,8 +96,9 @@ class Airline																		//Airline class
     List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
     List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
 
-    string FLIGHTSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";             //database connection string for Flights database
-    string BOOKINGSconnectionString = "Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;";             //database connection string for Bookings database
+    DatabaseOperations DBops = new DatabaseOperations();
+
+   
 
     public int flightsCount()       								//FLIGHTs count
     {
@@ -109,7 +114,7 @@ class Airline																		//Airline class
     {
         FlightsList.Clear();      //clearing previous data collected before updation
 
-        using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
+        /*using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
         {
             connection.Open();
             string query = "SELECT * FROM flights";                         //Query to read data from flights database
@@ -128,14 +133,17 @@ class Airline																		//Airline class
                 }
             }
             connection.Close();
-        }
+        }*/
+
+
+        FlightsList = DBops.readDatabaseFT().Cast<Flight>().ToList();
     }
 
     public void updateBookings()
     {
         BookingsList.Clear();      //clearing previous data collected before updation
 
-        using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
+        /*using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
         {
             connection.Open();
             string query = "SELECT * FROM bookings";                         //Query to read data from bookings database
@@ -155,10 +163,12 @@ class Airline																		//Airline class
                 }
             }
             connection.Close();
-        }
+        }*/
+
+        BookingsList = DBops.readDatabaseBK().Cast<Booking>().ToList();
     }
 
-    public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
+    /*public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
     {
         using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
         {
@@ -183,7 +193,8 @@ class Airline																		//Airline class
                 return false;
             }
         }
-    }
+    }*/
+
     public char seatAvailability(string flightcode, int seatno)               //Chceking seat availablity and marking it (R)eserved it for booking
     {
 
@@ -194,7 +205,7 @@ class Airline																		//Airline class
                 if (flight.availableSeats().Contains(seatno))
                 {
                     flight.seats[seatno] = 'R';
-                    if (!seatsDatabaseUpdation(flight.seats, flightcode))
+                    if (!DBops.seatsDatabaseUpdation(flight.seats, flightcode))
                     {
                         return 'D';             //  D = Database updation Error
                     }
@@ -244,6 +255,7 @@ class Airline																		//Airline class
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(" Database Bk Updation Error !");
                     Console.ResetColor();
+                    return;
                 }
                 connection.Close();
             }
