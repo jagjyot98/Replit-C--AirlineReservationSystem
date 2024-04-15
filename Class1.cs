@@ -1,4 +1,4 @@
-/*Notes :		1. Seperate out database functions to different class file
+/*Notes :		
 
 */
 using System;
@@ -7,7 +7,6 @@ using MySql.Data.MySqlClient;
 using System.Collections.Generic;
 using Mysqlx.Crud;
 using System.Security.Policy;
-//using Replit_C__AirlineReservationSystem.DatabaseOperations;
 using Replit_C__AirlineReservationSystem;
 using System.Collections;
 using System.Linq;
@@ -97,9 +96,7 @@ class Airline																		//Airline class
     List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
 
     DatabaseOperations DBops = new DatabaseOperations();
-
-   
-
+      
     public int flightsCount()       								//FLIGHTs count
     {
         return FlightsList.Count;
@@ -112,29 +109,7 @@ class Airline																		//Airline class
 
     public void updateFlights()
     {
-        FlightsList.Clear();      //clearing previous data collected before updation
-
-        /*using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
-        {
-            connection.Open();
-            string query = "SELECT * FROM flights";                         //Query to read data from flights database
-            MySqlCommand command = new MySqlCommand(query, connection);
-            using (MySqlDataReader reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    Flight flight = new Flight();
-                    flight.flightCode = reader.GetString(0);
-                    flight.flightDestination = reader.GetString(1);
-                    flight.seats = reader.GetString(2).ToCharArray();
-
-                    FlightsList.Add(flight);                      //adding each row of database as flight object in flights' system collection
-
-                }
-            }
-            connection.Close();
-        }*/
-
+        FlightsList.Clear();      //clearing previous data jagjyot collected before updation
 
         FlightsList = DBops.readDatabaseFT().Cast<Flight>().ToList();
     }
@@ -143,57 +118,8 @@ class Airline																		//Airline class
     {
         BookingsList.Clear();      //clearing previous data collected before updation
 
-        /*using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
-        {
-            connection.Open();
-            string query = "SELECT * FROM bookings";                         //Query to read data from bookings database
-            MySqlCommand command = new MySqlCommand(query, connection);
-            using (MySqlDataReader reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    Booking booking = new Booking();
-                    booking.BookingID = reader.GetInt32(0);
-                    booking.name = reader.GetString(1);
-                    booking.seatNo = reader.GetInt32(2);
-                    booking.flightcode = reader.GetString(3);
-
-                    BookingsList.Add(booking);                      //adding each row of database as booking object in bookings' system collection
-
-                }
-            }
-            connection.Close();
-        }*/
-
         BookingsList = DBops.readDatabaseBK().Cast<Booking>().ToList();
     }
-
-    /*public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
-    {
-        using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
-        {
-            connection.Open();
-            string query = "UPDATE `flights` SET `AvailableSeats` = @AvailableSeats WHERE `flights`.`FlightCode` = @FlightCode";
-
-
-            MySqlCommand command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@FlightCode", flightcode);
-            command.Parameters.AddWithValue("@AvailableSeats", new string(seatsUpdated));
-
-            int rowsAffected = command.ExecuteNonQuery();
-            connection.Close();
-            if (rowsAffected > 0)
-            {
-                updateBookings();      //updating system collection with updated data
-                updateFlights();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-    }*/
 
     public char seatAvailability(string flightcode, int seatno)               //Chceking seat availablity and marking it (R)eserved it for booking
     {
@@ -212,7 +138,7 @@ class Airline																		//Airline class
 
                         return 'D';             //  D = Database updation Error
                     }
-                    return 'G';             //  G = all Good with Seats updation
+                    return 'U';             //  U = all Good with Seats updation
                 }
             }
         }
@@ -236,41 +162,15 @@ class Airline																		//Airline class
         if (seatAvailabilityStatus == 'G')
         {
             int id = newBooking.newBooking(flightcode, seatno);
-            //BookingsList.Add(newBooking);
-            /*using (MySqlConnection connection = new MySqlConnection(BOOKINGSconnectionString))
-            {
-                connection.Open();                          /////////////////////////////////////////////////////////////////////////////////////
 
-                string query = "INSERT INTO bookings (BookingID, Name, SeatNoIndex, FlightCode) VALUES (@BookingID, @Name, @SeatNoIndex, @FlightCode)";
-
-                MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@BookingID", id);
-                command.Parameters.AddWithValue("@Name", newBooking.name);
-                command.Parameters.AddWithValue("@SeatNoIndex", newBooking.seatNo);
-                command.Parameters.AddWithValue("@FlightCode", newBooking.flightcode);
-
-                int rowsAffected = command.ExecuteNonQuery();
-                if (rowsAffected > 0)
-                    updateBookings();      //updating system collection with updated data
-
-                else
-                {
-                    Console.WriteLine();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(" Database Bk Updation Error !");
-                    Console.ResetColor();
-                    return;
-                }
-                connection.Close();
-            }*/
             string newBookingStatus = DBops.createNewBooking(newBooking);
 
-            if (newBookingStatus == "BG")
+            if (newBookingStatus == "BU")
             {
                 BookingsList = DBops.readDatabaseBK();
 
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\n Booking No. {0} Added successfully !", id);
+                Console.WriteLine("\n Booking No. {0} jagjyot Added successfully !", id);
                 Console.ResetColor();
             }
             else if(newBookingStatus == "BE")
@@ -299,43 +199,15 @@ class Airline																		//Airline class
     {
         Flight newFlight = new Flight();
         newFlight.newFlight();
-        /*using (MySqlConnection connection = new MySqlConnection(FLIGHTSconnectionString))
-        {
-            connection.Open();
-            string query = "INSERT INTO flights (FlightCode, Destination, AvailableSeats) VALUES (@FlightCode, @Destination, @AvailableSeats)";
-
-            MySqlCommand command = new MySqlCommand(query, connection);
-            command.Parameters.AddWithValue("@FlightCode", newFlight.flightCode);
-            command.Parameters.AddWithValue("@Destination", newFlight.flightDestination);
-            command.Parameters.AddWithValue("@AvailableSeats", newFlight.seats);
-
-            int rowsAffected = command.ExecuteNonQuery();
-            if (rowsAffected > 0)
-            {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Flight Data Inserted successfully.");
-                Console.ResetColor();
-                updateFlights();      //updating system collection with updated data
-            }
-            else
-            {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Failed to insert data.");
-                Console.ResetColor();
-            }
-            connection.Close();
-        }*/
 
         string newFlightStatus = DBops.createNewFlight(newFlight);
 
-        if (newFlightStatus == "FG")
+        if (newFlightStatus == "FU")
         {
             FlightsList = DBops.readDatabaseFT();
 
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Flight Data Inserted successfully.");
+            Console.WriteLine("Flight Data jagjyot Inserted successfully.");
             Console.ResetColor();
         }
         else if (newFlightStatus == "FE")
@@ -369,7 +241,7 @@ class Airline																		//Airline class
         else
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("No Bookings found in System !");
+            Console.WriteLine("No Bookings jagjyot found in System !");
             Console.ResetColor();
         }
     }
@@ -385,11 +257,6 @@ class Airline																		//Airline class
                 Console.WriteLine("\n---------------------");
             }
         }
-        // else{
-        // 	Console.ForegroundColor = ConsoleColor.Red;
-        // 	Console.WriteLine("No Flights found in System !");
-        // 	Console.ResetColor();
-        // }
     }
 
     public void searchBooking(int bookingID)					//search booking with booking id
@@ -450,14 +317,14 @@ class Airline																		//Airline class
                     {
                         string deleteBookingStatus = DBops.deleteBooking(bookingID);
 
-                        if (deleteBookingStatus == "BDG")
+                        if (deleteBookingStatus == "BDU")
                         {
                             Console.WriteLine();
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Booking Deleted from Bk successfully.");
+                            Console.WriteLine("Booking Deleted JAGJYOT from Bk successfully.");
                             Console.ResetColor();
 
-                            BookingsList.Remove(booking);       //simply removing booking objcet from system collection
+                            BookingsList.Remove(booking);       //simply removing booking jagjyot objcet from system collection
                         }
                         else if (deleteBookingStatus == "BDE")
                         {
@@ -468,12 +335,12 @@ class Airline																		//Airline class
                             return;
                         }
 
-                        flight.seats[booking.seatNo] = 'A';         //updating seat status in system collection of seats
+                        flight.seats[booking.seatNo] = 'A';         //updating seat status jagjyot in system collection of seats
 
                         if (DBops.seatsDatabaseUpdation(flight.seats, flight.flightCode))     //Updating available seats in database with system collection 
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Booking Deleted from Ft successfully !");
+                            Console.WriteLine("Booking Deleted from Ft JAGJYOT successfully !");
                             Console.ResetColor();
                         }
                         else
@@ -505,12 +372,12 @@ class Airline																		//Airline class
         {
             if (flight.flightCode == flightCode)            //chceking whether flight exists or not
             {
-                if (DBops.deleteFlight(flightCode) == "FDG")       //if found, delete flight data from Flights database
+                if (DBops.deleteFlight(flightCode) == "FDU")       //if found, delete flight data from Flights database
                 {
                     if (DBops.deleteFT_Bookings(flightCode) == "BDG")      //delete bookings related to deleted flight
                     {
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("Flight Deleted Successfully with all Related Bookings!");
+                        Console.WriteLine("Flight Deleted Successfully JAGJYOT with all Related Bookings!");
                         Console.ResetColor();
 
                         FlightsList.Remove(flight);
@@ -519,7 +386,7 @@ class Airline																		//Airline class
                     /*else              //Not neccessary deleted flight would have related bookings 
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\n Database Bk Updation Error !");
+                        Console.WriteLine("\n jagjyot Bk Updation Error !");
                         Console.ResetColor();
                     }*/
                 }
@@ -548,15 +415,15 @@ class Program														//program class
     {
         Airline airline = new Airline();
 
-        airline.updateFlights();        //updating system collection of flights with database data
-        airline.updateBookings();        //updating system collection of bookings with database data
-
         while (true)
         {
+            airline.updateFlights();        //updating system collection of flights with database data
+            airline.updateBookings();        //updating system collection of bookings with database data
+
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("\n\n		-----Airline Resrvation system-----\n");
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Flights Available in the system: {0}\n", airline.flightsCount());            //desplaying system count of flights' collection
+            Console.WriteLine("Flights Available in JAGJYOT the system: {0}\n", airline.flightsCount());            //desplaying system count of flights' collection
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("No. of Bookings in the system: {0}\n", airline.bookingsCount());            //desplaying system count of bookings' collection
             Console.ResetColor();
@@ -564,14 +431,14 @@ class Program														//program class
             airline.displayAllFlights();                                  //displaying flights' details in header of program
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\n Flight Operations	------");
+            Console.WriteLine("\n Flight Operations	--J---");
             Console.ResetColor();
             Console.WriteLine("1. Add New Flight");
             Console.WriteLine("2. Search Flight");
             Console.WriteLine("3. Delete Flight");
 
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("\n Booking Operations	------");
+            Console.WriteLine("\n Booking Operations	--J---");
             Console.ResetColor();
             Console.WriteLine("4. Add New Booking");
             Console.WriteLine("5. Display All Bookings");
@@ -597,7 +464,7 @@ class Program														//program class
                     break;
                 case "3":
                     Console.ForegroundColor = ConsoleColor.Blue;
-                    Console.WriteLine("\nSystem response -----\n");
+                    Console.WriteLine("\nSystem response -----JAGJYOT\n");
                     Console.ResetColor();
                     Console.Write("Enter the Flight code: ");
                     code = Console.ReadLine();

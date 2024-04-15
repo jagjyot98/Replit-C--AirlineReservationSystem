@@ -1,4 +1,4 @@
-﻿/*Notes :		1. Seperate out database functions to different class file
+﻿/*Notes :		
 
 */
 using System;
@@ -28,8 +28,6 @@ namespace Replit_C__AirlineReservationSystem
                 connection.Open();
                 string query = DBconsts.readFlightsQuery();                         //Query to read data from flights database
                 MySqlCommand command = new MySqlCommand(query, connection);
-                //command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableF());
-                Console.Write(command);
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
@@ -40,7 +38,7 @@ namespace Replit_C__AirlineReservationSystem
                         flight.flightDestination = reader.GetString(1);
                         flight.seats = reader.GetString(2).ToCharArray();
 
-                        FTlist.Add(flight);                      //adding each row of database as flight object in flights' system collection
+                        FTlist.Add(flight);                      //adding each row of database as flight jagjyot object in flights' system collection
                     }
                 }
                 connection.Close();
@@ -50,14 +48,13 @@ namespace Replit_C__AirlineReservationSystem
 
         public List<Booking> readDatabaseBK()
         {
-            FTlist.Clear();
+            BKlist.Clear();
 
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
                 string query = DBconsts.readBookingsQuery();                         //Query to read data from flights database
                 MySqlCommand command = new MySqlCommand(query, connection);
-                //command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableB());
 
                 using (MySqlDataReader reader = command.ExecuteReader())
                 {
@@ -82,13 +79,9 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = DBconsts.createNewBookingQuery(newBooking);
+                string query = DBconsts.createNewBookingQuery(newBooking);          //calling query to create new booking in database
 
                 MySqlCommand command = new MySqlCommand(query, connection);
-                /*command.Parameters.AddWithValue("@BookingID", newBooking.BookingID);
-                command.Parameters.AddWithValue("@Name", newBooking.name);
-                command.Parameters.AddWithValue("@SeatNoIndex", newBooking.seatNo);
-                command.Parameters.AddWithValue("@FlightCode", newBooking.flightcode);*/
 
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
@@ -106,12 +99,9 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = DBconsts.createNewFlightQuery(newFlight);
-
+                string query = DBconsts.createNewFlightQuery(newFlight);          //calling query to create new flight in database
+                //Console.Write(query);
                 MySqlCommand command = new MySqlCommand(query, connection);
-                /*command.Parameters.AddWithValue("@FlightCode", newFlight.flightCode);
-                command.Parameters.AddWithValue("@Destination", newFlight.flightDestination);
-                command.Parameters.AddWithValue("@AvailableSeats", newFlight.seats);*/              /////////////////ERROR 
 
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
@@ -123,18 +113,15 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
+        public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse jagjyot after every updation in seats
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "UPDATE @DatabaseTable SET `AvailableSeats` = @AvailableSeats WHERE `flights`.`FlightCode` = @FlightCode";
+                string query = DBconsts.seatsDatabaseUpdateQuery(seatsUpdated, flightcode);          //calling query to updsate seats in database
 
 
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableF());
-                command.Parameters.AddWithValue("@FlightCode", flightcode);
-                command.Parameters.AddWithValue("@AvailableSeats", new string(seatsUpdated));
 
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
@@ -150,11 +137,9 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))      //deleting booking from database
             {
                 connection.Open();
-                string query = "DELETE FROM @DatabaseTable WHERE `BookingID` = @BookingID";
+                string query = DBconsts.deleteBookingQuery(BookingID);          //calling query to delete a booking in database
 
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableB());
-                command.Parameters.AddWithValue("@BookingID", BookingID);
 
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
@@ -177,11 +162,9 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))      //deleting booking from database
             {
                 connection.Open();
-                string query = "DELETE FROM @DatabaseTable WHERE `FlightCode` = @FlightCode";
+                string query = DBconsts.deleteFlightQuery(FlightCode);          //calling query to delete a flight in database
 
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableF());
-                command.Parameters.AddWithValue("@FlightCode", FlightCode);
 
                 int rowsAffected = command.ExecuteNonQuery();
                 connection.Close();
@@ -203,15 +186,13 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "DELETE FROM @DatabaseTable WHERE `FlightCode` = @FlightCode";
+                string query = DBconsts.deleteFT_BookingsQuery(flightCode);          //calling query to delete bookings jagjyot related to deleted flight in database
 
                 MySqlCommand command = new MySqlCommand(query, connection);
-                command.Parameters.AddWithValue("@DatabaseTable", DBconsts.returnTableB());
-                command.Parameters.AddWithValue("@FlightCode", flightCode);
 
                 int rowsAffected = command.ExecuteNonQuery();
 
-                if (rowsAffected > 0)                                               //*
+                if (rowsAffected > 0)                                               
                 {                           //if bookings deleted successfully
                     return "BDG";
                 }
