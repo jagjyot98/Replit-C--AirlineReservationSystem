@@ -38,7 +38,7 @@ namespace Replit_C__AirlineReservationSystem
                         flight.flightDestination = reader.GetString(1);
                         flight.seats = reader.GetString(2).ToCharArray();
 
-                        FTlist.Add(flight);                      //adding each row of database as flight jagjyot object in flights' system collection
+                        FTlist.Add(flight);                      //adding each row of database as flight object in flights' system collection
                     }
                 }
                 connection.Close();
@@ -113,7 +113,7 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse jagjyot after every updation in seats
+        public bool seatsDatabaseUpdation(char[] seatsUpdated, string flightcode)            //Updating Available Seats list in databse after every updation in seats
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
@@ -186,13 +186,13 @@ namespace Replit_C__AirlineReservationSystem
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = DBconsts.deleteFT_BookingsQuery(flightCode);          //calling query to delete bookings jagjyot related to deleted flight in database
+                string query = DBconsts.deleteFT_BookingsQuery(flightCode);          //calling query to delete bookings related to deleted flight in database
 
                 MySqlCommand command = new MySqlCommand(query, connection);
 
                 int rowsAffected = command.ExecuteNonQuery();
 
-                if (rowsAffected > 0)                                               
+                if (rowsAffected > 0)                                               //*
                 {                           //if bookings deleted successfully
                     return "BDG";
                 }
