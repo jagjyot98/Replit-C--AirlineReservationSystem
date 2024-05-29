@@ -9,6 +9,7 @@ using System.Data;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
 using System.Collections;
+using System.Data.SqlClient;
 
 namespace Replit_C__AirlineReservationSystem
 {
@@ -74,6 +75,34 @@ namespace Replit_C__AirlineReservationSystem
             return BKlist;
         }
 
+        public string login(string userID, string password)
+        {
+            //BKlist.Clear();
+
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = DBconsts.readLoginQuery(userID,password);                         //Query to login user
+                MySqlCommand command = new MySqlCommand(query, connection);
+                MySqlDataReader reader = command.ExecuteReader();
+                
+
+                if (reader.HasRows)
+                {
+                    
+                    //Users user = new Users();
+                    //user.fullName = reader.GetString(1);
+                    connection.Close();
+                    return "UG";
+                }
+                else
+                {
+                    connection.Close();
+                    return "UE";
+                }
+            }
+        }
+
         public string createNewBooking(Booking newBooking)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -110,6 +139,25 @@ namespace Replit_C__AirlineReservationSystem
                     return "FG";
                 else
                     return "FE";
+            }
+        }
+
+        public string createNewUser(Users user)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = DBconsts.createNewUserQuery(user);          //calling query to create new user in database
+                //Console.Write(query);
+                MySqlCommand command = new MySqlCommand(query, connection);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                connection.Close();
+
+                if (rowsAffected > 0)
+                    return "UG";
+                else
+                    return "UE";
             }
         }
 

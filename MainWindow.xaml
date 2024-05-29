@@ -20,7 +20,7 @@
                     <TextBox x:Name="FTDestinationInput" TextWrapping="Wrap" Width="120" Height="25" VerticalAlignment="Top" Margin="10,10,0,0" Padding="0,5,0,0" BorderBrush="Black" />
                 </StackPanel>
                 <Button x:Name="FTSubmitButton" Content="Submit" Margin="0,10,0,0" Height="25" Width="89" Background="#FFDDDDDD" Click="FTSubmitButton_Click" />
-                <Label x:Name="FTmessageDisplay" Width="212" Height="115" Margin="0,20,0,0" Padding="5,10,5,5" Content="Label"/>
+                <Label x:Name="FTmessageDisplay" Width="330" Height="115" Margin="0,20,0,0" Padding="5,10,5,5" Content="Label" IsTabStop="True"/>
             </StackPanel>
         </GroupBox>
         <GroupBox x:Name="BookingGroup" Header="Bookings" Margin="660,79,10,27" BorderBrush="Black" Visibility="Collapsed">
@@ -38,20 +38,41 @@
                     <TextBox x:Name="BKNameInput" TextWrapping="Wrap" Width="120" Height="25" VerticalAlignment="Top" Margin="10,10,0,0" Padding="0,5,0,0" BorderBrush="Black"/>
                 </StackPanel>
                 <Button x:Name="BKSubmitButton" Content="Submit" Margin="0,10,0,0" Height="25" Width="89" Background="#FFDDDDDD" Click="BKSubmitButton_Click"/>
-                <Label x:Name="BKmessageDisplay" Content="Label" Margin="0,20,0,0" Width="204" Height="92" Padding="5,10,5,5"/>
+                <Label x:Name="BKmessageDisplay" Content="Label" Margin="0,20,0,0" Width="315" Height="92" Padding="5,10,5,5"/>
             </StackPanel>
         </GroupBox>
-        <Label x:Name="GeneralMssgDisplay" Content="All Flights data will be visible here." HorizontalAlignment="Center" Height="231" Margin="0,146,0,0" VerticalAlignment="Top" Width="222" HorizontalContentAlignment="Center" Visibility="Collapsed"/>
-        <GroupBox x:Name="LoginGroup" Header="Login" HorizontalAlignment="Center" BorderThickness="2,2,2,2" VerticalAlignment="Top" Width="224" Height="268" Margin="0,111,0,0" Visibility="Visible">
+        <Label x:Name="GeneralMssgDisplay" Content="All Flights data will be visible here." HorizontalAlignment="Center" Height="330" Margin="0,94,0,0" VerticalAlignment="Top" Width="248" HorizontalContentAlignment="Center" Padding="0,5,0,5" Visibility="Collapsed"/>
+        <GroupBox x:Name="LoginGroup" Header="Login" HorizontalAlignment="Center" BorderThickness="2,2,2,2" VerticalAlignment="Top" Width="224" Height="275" Margin="0,111,0,0">
             <StackPanel>
                 <Label x:Name="loginErrorMessage" Height="27" Width="212" Foreground="#FFF42A2A" FontSize="13" Margin="0,10,0,0" Padding="7,5,5,5"/>
-                <Label x:Name="usernameHead" Content="Enter Username..." Width="178" Padding="0,5,5,0"/>
+                <Label x:Name="usernameHead" Content="Enter UserID..." Width="178" Padding="0,5,5,0"/>
                 <TextBox x:Name="userNameTextbox" TextWrapping="Wrap" Width="179" Height="28" VerticalContentAlignment="Center" Padding="4,0,0,0"/>
                 <Label x:Name="passwordHead" Content="Enter Password..." Margin="0,20,0,0" Width="181" Padding="0,5,5,0"/>
                 <TextBox x:Name="passwordTextbox" TextWrapping="Wrap" Width="182" Height="27" VerticalContentAlignment="Center" Padding="4,0,0,0"/>
-                <Button x:Name="loginSubmitButton" Content="Submit" Margin="0,30,0,40" Height="26" Width="98" Click="loginSubmitButton_Click"/>
+                <Button x:Name="loginSubmitButton" Content="Submit" Margin="0,20,0,20" Height="26" Width="98" Click="loginSubmitButton_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Create a new Account.." Margin="0,0,10,0"/>
+                    <Button x:Name="DirectSignupButton" Content="SignUp" Width="57" Margin="0,5,0,5" Click="DirectSignupButton_Click" />
+                </StackPanel>
             </StackPanel>
         </GroupBox>
-
+        <GroupBox x:Name="SignupGroup" HorizontalAlignment="Center" Height="296" Header="SignUp" Margin="0,101,0,0" VerticalAlignment="Top" Width="266" Visibility="Collapsed">
+            <StackPanel>
+                <Label x:Name="signupErrorMessage" Height="48" Width="230" Foreground="#FFF42A2A" FontSize="13" Margin="0,10,0,0" Padding="7,5,5,5"/>
+                <StackPanel Height="36"  Orientation="Horizontal" Margin="5,5,5,0">
+                    <Label x:Name="fullNameHead" Content="Enter ur Name:" Margin="0,5,5,5" Width="100" HorizontalAlignment="Center" Padding="0,5,0,5"/>
+                    <TextBox x:Name="fullNameInput" TextWrapping="Wrap" Width="137" Margin="0,5,0,5"/>
+                </StackPanel>
+                <StackPanel Height="36"  Orientation="Horizontal" Margin="5,5,5,0">
+                    <Label x:Name="passwordSignupHead" Content="Enter a password:" Margin="0,5,5,5" Width="100" HorizontalAlignment="Center" Padding="0,5,0,5"/>
+                    <TextBox x:Name="passwordInput" TextWrapping="Wrap" Width="136" Margin="0,5,0,5"/>
+                </StackPanel>
+                <Button x:Name="signupSubmitButton" Margin="0,20,0,20" Height="26" Width="98" Content="SignUp" Click="signupSubmitButton_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <Label Content="Already have Account.." Margin="10,0,10,0" Width="144"/>
+                    <Button x:Name="DirectLoginButton" Content="Login" Width="57" Click="DirectLoginButton_Click" />
+                </StackPanel>
+            </StackPanel>
+        </GroupBox>
     </Grid>
 </Window>

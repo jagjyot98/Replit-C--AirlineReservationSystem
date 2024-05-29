@@ -18,12 +18,18 @@ namespace Replit_C__AirlineReservationSystem
         private static string Uid = "root";
         private static string Pwd = "";
 
+        private static string tableU = "users";
         private static string tableF = "flights";
         private static string tableB = "bookings";
 
         public static string returnConnectionString()       //generate and return connection string for database connection
         {
             return "Server=" + Server + ";Database=" + Database + ";Uid=" + Uid + ";Pwd=" + Pwd + ";";
+        }
+
+        public static string readLoginQuery(string userID, string password) 
+        {
+            return "SELECT * FROM "+tableU+" WHERE `userID` = \""+userID+"\" AND `password` = \""+password+"\"";
         }
 
         public static string readFlightsQuery()             //generates and returns query to read flights table
@@ -36,14 +42,19 @@ namespace Replit_C__AirlineReservationSystem
             return "SELECT * FROM "+tableB;
         }
 
+        public static string createNewUserQuery(Users newUser)             //generates and returns query to create new flight
+        {
+            return "INSERT INTO "+tableU+" (userID, FullName, Password) VALUES (\"" + newUser.userID + "\", \"" + newUser.fullName + "\", \"" + newUser.password + "\")";
+        }
+
         public static string createNewFlightQuery(Flight newFlight)             //generates and returns query to create new flight
         {
-           return "INSERT INTO flights (FlightCode, Destination, AvailableSeats) VALUES (\""+newFlight.flightCode+"\", \""+newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\")";
+           return "INSERT INTO "+tableF+" (FlightCode, Destination, AvailableSeats) VALUES (\""+newFlight.flightCode+"\", \""+newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\")";
         }
 
         public static string createNewBookingQuery(Booking newBooking)             //generates and returns query to create new booking
         {
-            return "INSERT INTO bookings (BookingID, Name, SeatNoIndex, FlightCode) VALUES (\""+newBooking.BookingID+"\", \""+newBooking.name+"\", \""+newBooking.seatNo+"\", \""+newBooking.flightcode+"\")";
+            return "INSERT INTO "+tableB+" (BookingID, Name, SeatNoIndex, FlightCode) VALUES (\""+newBooking.BookingID+"\", \""+newBooking.name+"\", \""+newBooking.seatNo+"\", \""+newBooking.flightcode+"\")";
         }
 
         public static string seatsDatabaseUpdateQuery(char[] seatsUpdated, string flightcode)             //generates and returns query to update seats of a flight

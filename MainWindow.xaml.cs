@@ -1,6 +1,7 @@
 ﻿/*Notes :		1.Join the functionality to create flights and bookings.
  *              2.Add fucntionality for delete flight, search booking, delete booking, display bookings.
  *              3.MIGHT want to seperate out fucntionalites for Admin and User based on login credentials
+ *              4.Seat not Available in seat booking
 
 */
 using System;
@@ -125,10 +126,10 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        public string addNewFlight()                    //add new FLIGHTS
+        public string addNewFlight(string desti)                    //add new FLIGHTS
         {
             Flight newFlight = new Flight();
-            newFlight.newFlight();
+            newFlight.newFlight(desti);
 
             string newFlightStatus = DBops.createNewFlight(newFlight);
 
@@ -143,6 +144,30 @@ namespace Replit_C__AirlineReservationSystem
             else //if (newFlightStatus == "FE")
             {
                 return "Database Ft Updation Error !";
+                /*Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(" Database Ft Updation Error !");
+                Console.ResetColor();*/
+            }
+        }
+
+        public string addNewUser(string userName, string password)                    //add new FLIGHTS
+        {
+            Users newUser = new Users();
+            string userID = newUser.newUser(userName, password);
+            string newUserStatus = DBops.createNewUser(newUser);
+
+            if (newUserStatus == "UG")
+            {
+                //FlightsList = DBops.readDatabaseFT();
+                return "New user Created with ID."+userID+"\nTry Login..";
+                //Console.ForegroundColor = ConsoleColor.Green;
+                //Console.WriteLine("Flight Data Inserted successfully.");
+                //Console.ResetColor();
+            }
+            else //if (newFlightStatus == "FE")
+            {
+                return "Database Ut Updation Error !";
                 /*Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(" Database Ft Updation Error !");
@@ -361,11 +386,11 @@ namespace Replit_C__AirlineReservationSystem
 
         public void flightsCount()                                       //FLIGHTs count
         {
-            noOfFlightsDisplay.Text += FlightsList.Count;
+            noOfFlightsDisplay.Text = "No. of Flights Available: "+FlightsList.Count;
         }
         public void bookingsCount()              //BOOKINGs count
         {
-            noOfBookingsDisplay.Text += BookingsList.Count;
+            noOfBookingsDisplay.Text = "No. of Bookings in System: "+BookingsList.Count;
         }
 
         public void updateFlights()
@@ -398,24 +423,28 @@ namespace Replit_C__AirlineReservationSystem
         private void loginSubmitButton_Click(object sender, RoutedEventArgs e)
         {
             if (userNameTextbox.Text.Length == 0 || passwordTextbox.Text.Length == 0)
-            { 
-                
+            {
+
                 loginErrorMessage.Content = "Missed Credential !!";
                 userNameTextbox.Text = string.Empty;
                 passwordTextbox.Text = string.Empty;
             }
-            else if (userNameTextbox.Text == "ABC123ABC" && passwordTextbox.Text == "abc123")
-            {
-                LoginGroup.Visibility = Visibility.Collapsed;
-                FlightGroup.Visibility = Visibility.Visible;
-                BookingGroup.Visibility = Visibility.Visible;
-                GeneralMssgDisplay.Visibility = Visibility.Visible;
-            }
             else
             {
-                loginErrorMessage.Content = "Invalid Credentials !!";
-                userNameTextbox.Text = string.Empty;
-                passwordTextbox.Text = string.Empty;
+                string loginResult = DBops.login(userNameTextbox.Text, passwordTextbox.Text);
+                if ("UG" == loginResult)
+                {
+                    LoginGroup.Visibility = Visibility.Collapsed;
+                    FlightGroup.Visibility = Visibility.Visible;
+                    BookingGroup.Visibility = Visibility.Visible;
+                    GeneralMssgDisplay.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    loginErrorMessage.Content = loginResult;//"Invalid Credentials !!";
+                    userNameTextbox.Text = string.Empty;
+                    passwordTextbox.Text = string.Empty;
+                }
             }
         }
 
@@ -429,7 +458,11 @@ namespace Replit_C__AirlineReservationSystem
             else 
             {
                 //FTmessageDisplay.Content = string.Empty;
-                FTmessageDisplay.Content = airline.addNewFlight();
+                FTmessageDisplay.Content = airline.addNewFlight(FTDestinationInput.Text);
+                FTDestinationInput.Text = string.Empty;
+                updateFlights();
+                flightsCount();
+                displayAllFlights();
             }
         }
 
@@ -446,9 +479,41 @@ namespace Replit_C__AirlineReservationSystem
                 int seatNo;
                 int.TryParse(BKSeatNoInput.Text, out seatNo);
                 BKmessageDisplay.Content = airline.addNewBooking(BKFlightCodeInput.Text,seatNo);
+                BKFlightCodeInput.Text = string.Empty;
+                BKSeatNoInput.Text = string.Empty;
+                BKNameInput.Text = string.Empty;
+                updateBookings();
+                updateFlights();
+                bookingsCount();
+                displayAllFlights();
             }
         }
 
-      
+        private void DirectSignupButton_Click(object sender, RoutedEventArgs e)
+        {
+            LoginGroup.Visibility = Visibility.Collapsed;
+            SignupGroup.Visibility = Visibility.Visible;
+        }
+
+        private void DirectLoginButton_Click(object sender, RoutedEventArgs e)
+        {
+            SignupGroup.Visibility = Visibility.Collapsed;
+            LoginGroup.Visibility = Visibility.Visible;
+        }
+
+        private void signupSubmitButton_Click(object sender, RoutedEventArgs e)
+        {
+            if(fullNameInput.Text.Length > 0 && passwordInput.Text.Length > 0) 
+            {
+
+                signupErrorMessage.Content = airline.addNewUser(fullNameInput.Text,passwordInput.Text);
+                fullNameInput.Text = string.Empty;
+                passwordInput.Text = string.Empty;
+            }
+            else
+            {
+                signupErrorMessage.Content = "Missed detais..";
+            }
+        }
     }
 }

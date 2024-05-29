@@ -12,6 +12,24 @@ using System.Collections;
 using System.Linq;
 using System.Windows;
 
+class Users
+{
+    public string userID;
+    public string fullName;
+    public string password;
+
+    private static Random random = new Random();
+
+    public string newUser(string userName, string password)
+    {
+        this.fullName = userName;
+        this.password = password;
+        this.userID = "UN" + random.Next(10000, 99999);
+        return userID;
+    }
+
+}
+
 class Flight																//Flight Class
 {
     public string flightCode;
@@ -31,16 +49,17 @@ class Flight																//Flight Class
         return count;
     }
 
-    public void newFlight()                     //to create a new flight
+    public void newFlight(string desti)                     //to create a new flight
     {
-        Console.Write("Enter your destination: ");
-        flightDestination = Console.ReadLine();
-        flightCode = "FL" + random.Next(1000, 9999);            //generating a random unique flight code
+        //Console.Write("Enter your destination: ");
+        //flightDestination = Console.ReadLine();
+        this.flightDestination = desti;
+        this.flightCode = "FL" + random.Next(1000, 9999);            //generating a random unique flight code
         for (int i = 0; i < seats.Length; i++)
             seats[i] = 'A';
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("\n Flight " + flightCode + " to " + flightDestination + " created with 10 seats.");
-        Console.ResetColor();
+        //Console.ForegroundColor = ConsoleColor.Green;
+        //Console.WriteLine("\n Flight " + this.flightCode + " to " + this.flightDestination + " created with 10 seats.");
+        //Console.ResetColor();
     }
 
     public string displayFlight()             //to display flighs(s) details in the header pf program
