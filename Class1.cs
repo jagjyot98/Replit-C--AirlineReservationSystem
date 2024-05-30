@@ -67,7 +67,7 @@ class Flight																//Flight Class
         List<int> list = availableSeats();
         string seats="";
         foreach (int seat in list)
-            seats+=(seat + 1 + " ");
+            seats+=(seat + 1 + " ");  
 
         string flight = "\nFlight Code: "+flightCode+ " to Destination: " + flightDestination+ "\nAvailable seats: "+seats+ "\n---------------------";
         return flight;
@@ -93,12 +93,13 @@ class Booking														//Booking class
 
     private static Random random = new Random();
 
-    public int newBooking(string flightcode, int seatno)        //to create new booking
+    public int newBooking(string name, string flightcode, int seatno)        //to create new booking
     {
         BookingID = new Random().Next(100, 500);            //generating random unique booking id
         this.flightcode = flightcode;
-        Console.Write("Enter your name: ");
-        name = Console.ReadLine();
+        this.name = name;
+        //Console.Write("Enter your name: ");
+        //name = Console.ReadLine();
         this.seatNo = seatno;
         return BookingID;
     }
@@ -117,6 +118,8 @@ class Program														//program class
     [STAThread]
     public static void Main(string[] args)
     {
+
+        //Console.WriteLine("HELLO.............!!!!!!!!!!!!!!!!!!!!");
         Application app = new Application();
         MainWindow win = new MainWindow();
         app.Run(win);

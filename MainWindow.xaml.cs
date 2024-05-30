@@ -1,7 +1,6 @@
-﻿/*Notes :		1.Join the functionality to create flights and bookings.
+﻿/*Notes :		
  *              2.Add fucntionality for delete flight, search booking, delete booking, display bookings.
  *              3.MIGHT want to seperate out fucntionalites for Admin and User based on login credentials
- *              4.Seat not Available in seat booking
 
 */
 using System;
@@ -27,8 +26,8 @@ namespace Replit_C__AirlineReservationSystem
     /// 
     class Airline                                                                       //Airline class
     {
-        List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
-        List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
+        public List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
+        public List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
 
         DatabaseOperations DBops = new DatabaseOperations();
 
@@ -67,13 +66,17 @@ namespace Replit_C__AirlineReservationSystem
                         }
                         return 'G';             //  G = all Good with Seats updation
                     }
+                    Console.WriteLine(new List<int> { 1, 2, 3, 4, 5 });
+                    //Console.WriteLine(flight.availableSeats().ToString());
                 }
+               
             }
+            Console.WriteLine(FlightsList[0].flightDestination);
             return 'S';             //  S = Seat not available
         }
 
 
-        public string addNewBooking(string flightcode, int seatno)           //add new BOOKINGS            
+        public string addNewBooking(string name, string flightcode, int seatno)           //add new BOOKINGS            
         {
             Booking newBooking = new Booking();
             //string flightcode; int seatno;
@@ -88,7 +91,7 @@ namespace Replit_C__AirlineReservationSystem
 
             if (seatAvailabilityStatus == 'G')
             {
-                int id = newBooking.newBooking(flightcode, seatno);
+                int id = newBooking.newBooking(name, flightcode, seatno);
 
                 string newBookingStatus = DBops.createNewBooking(newBooking);
 
@@ -112,7 +115,7 @@ namespace Replit_C__AirlineReservationSystem
             }
             else if (seatAvailabilityStatus == 'S')
             {
-                return " Seat not Available !";
+                return "Seat not Available !";
                 /*Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("\n Seat not Available !");
                 Console.ResetColor();*/
@@ -379,44 +382,44 @@ namespace Replit_C__AirlineReservationSystem
         }
 
         Airline airline = new Airline();
-        List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
-        List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
+        //List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
+        //List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
 
         DatabaseOperations DBops = new DatabaseOperations();
 
         public void flightsCount()                                       //FLIGHTs count
         {
-            noOfFlightsDisplay.Text = "No. of Flights Available: "+FlightsList.Count;
+            noOfFlightsDisplay.Text = "No. of Flights Available: "+airline.FlightsList.Count;
         }
         public void bookingsCount()              //BOOKINGs count
         {
-            noOfBookingsDisplay.Text = "No. of Bookings in System: "+BookingsList.Count;
+            noOfBookingsDisplay.Text = "No. of Bookings in System: "+airline.BookingsList.Count;
         }
 
         public void updateFlights()
         {
-            FlightsList.Clear();      //clearing previous data collected before updation
+            airline.FlightsList.Clear();      //clearing previous data collected before updation
 
-            FlightsList = DBops.readDatabaseFT().Cast<Flight>().ToList();
-            Console.WriteLine(FlightsList);
+            airline.FlightsList = DBops.readDatabaseFT().Cast<Flight>().ToList();
+            //Console.WriteLine(FlightsList);
         }
 
         public void updateBookings()
         {
-            BookingsList.Clear();      //clearing previous data collected before updation
+            airline.BookingsList.Clear();      //clearing previous data collected before updation
 
-            BookingsList = DBops.readDatabaseBK().Cast<Booking>().ToList();
+            airline.BookingsList = DBops.readDatabaseBK().Cast<Booking>().ToList();
         }
 
         public void displayAllFlights()             //display all flights
         {
             GeneralMssgDisplay.Content = string.Empty;
-            if (FlightsList.Count != 0)
+            if (airline.FlightsList.Count != 0)
             {
-                for (int i = 0; i < FlightsList.Count; i++)
+                for (int i = 0; i < airline.FlightsList.Count; i++)
                 {
                     GeneralMssgDisplay.Content += "\n" + (i + 1);
-                    GeneralMssgDisplay.Content += FlightsList[i].displayFlight();
+                    GeneralMssgDisplay.Content += airline.FlightsList[i].displayFlight();
                 }
             }
         }
@@ -478,7 +481,7 @@ namespace Replit_C__AirlineReservationSystem
                 //BKmessageDisplay.Content = string.Empty;
                 int seatNo;
                 int.TryParse(BKSeatNoInput.Text, out seatNo);
-                BKmessageDisplay.Content = airline.addNewBooking(BKFlightCodeInput.Text,seatNo);
+                BKmessageDisplay.Content = airline.addNewBooking(BKNameInput.Text, BKFlightCodeInput.Text,seatNo);
                 BKFlightCodeInput.Text = string.Empty;
                 BKSeatNoInput.Text = string.Empty;
                 BKNameInput.Text = string.Empty;
