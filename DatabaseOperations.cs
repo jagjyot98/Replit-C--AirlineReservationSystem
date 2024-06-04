@@ -3,6 +3,7 @@
 */
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Text;
 using System.Data;
@@ -75,30 +76,152 @@ namespace Replit_C__AirlineReservationSystem
             return BKlist;
         }
 
-        public string login(string userID, string password)
+        public HashSet<int> readDatabaseBookingIDs()    /////////////////////
         {
-            //BKlist.Clear();
+            HashSet<int> bookingIds = new HashSet<int>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                
+                connection.Open();
+                string query = DBconsts.readBookingIDsQuery();                         //Query to read data from flights database
+                MySqlCommand command = new MySqlCommand(query, connection);
 
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bookingIds.Add(reader.GetInt32(0));
+                    }
+                }
+                connection.Close();
+            }
+            return bookingIds;
+        }
+
+        public HashSet<string> readDatabaseFlightCodes()    //////////////////////
+        {
+            HashSet<string> flightCodes = new HashSet<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+
+                connection.Open();
+                string query = DBconsts.readFlightCodesQuery();                         //Query to read data from flights database
+                MySqlCommand command = new MySqlCommand(query, connection);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        flightCodes.Add(reader.GetString(0));
+                    }
+                }
+                connection.Close();
+            }
+            return flightCodes;
+        }
+
+        public HashSet<string> readDatabaseUserIDs()    /////////////////////
+        {
+            HashSet<string> userIds = new HashSet<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+
+                connection.Open();
+                string query = DBconsts.readUserIDsQuery();                         //Query to read data from flights database
+                MySqlCommand command = new MySqlCommand(query, connection);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        userIds.Add(reader.GetString(0));
+                    }
+                }
+                connection.Close();
+            }
+            return userIds;
+        }
+
+        public HashSet<string> readDatabaseAdminIDs()    /////////////////////
+        {
+            HashSet<string> userAIds = new HashSet<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+
+                connection.Open();
+                string query = DBconsts.readAdminIDsQuery();                         //Query to read data from flights database
+                MySqlCommand command = new MySqlCommand(query, connection);
+
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        userAIds.Add(reader.GetString(0));
+                    }
+                }
+                connection.Close();
+            }
+            return userAIds;
+        }
+
+        public string adLogin(string userID, string password)
+        {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = DBconsts.readLoginQuery(userID,password);                         //Query to login user
+                string query = DBconsts.readAdLoginQuery(userID, password);                         //Query to login user
                 MySqlCommand command = new MySqlCommand(query, connection);
                 MySqlDataReader reader = command.ExecuteReader();
-                
+
 
                 if (reader.HasRows)
                 {
-                    
                     //Users user = new Users();
                     //user.fullName = reader.GetString(1);
                     connection.Close();
-                    return "UG";
+                    return "AG";
                 }
                 else
                 {
                     connection.Close();
-                    return "UE";
+                    return "AE";
+                }
+            }
+        }
+
+        public string login(string userID, string password)
+        {
+            //BKlist.Clear();
+            Regex regex = new Regex(DBconsts.returnAdIdPattern());
+            if (regex.IsMatch(userID))
+            {
+                return adLogin(userID, password);
+            }
+            else
+            { 
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = DBconsts.readLoginQuery(userID, password);                         //Query to login user
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    MySqlDataReader reader = command.ExecuteReader();
+
+                    if (reader.HasRows)
+                    {
+                        //Users user = new Users();
+                        //user.fullName = reader.GetString(1);
+                        
+                        GlobalSessionClass.currentUserID = reader.GetString(0);
+                        GlobalSessionClass.currentUserName = reader.GetString(1);
+
+                        connection.Close();
+                        return "UG";
+                    }
+                    else
+                    {
+                        connection.Close();
+                        return"UE";
+                    }
                 }
             }
         }
@@ -142,12 +265,39 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        public string createNewUser(Users user)
+        public string createNewUser(bool adflag,Users user)
+        {
+            //Regex regex = new Regex(DBconsts.returnAdIdPattern());
+            if (adflag)
+            {
+                return createNewAdUser(user);
+            }
+            else
+            {
+                using (MySqlConnection connection = new MySqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = DBconsts.createNewUserQuery(user);          //calling query to create new user in database
+                    //Console.Write(query);
+                    MySqlCommand command = new MySqlCommand(query, connection);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    connection.Close();
+
+                    if (rowsAffected > 0)
+                        return "UG";
+                    else
+                        return "UE";
+                }
+            }
+        }
+
+        public string createNewAdUser(Users AdUser)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
             {
                 connection.Open();
-                string query = DBconsts.createNewUserQuery(user);          //calling query to create new user in database
+                string query = DBconsts.createNewAdUserQuery(AdUser);          //calling query to create new user in database
                 //Console.Write(query);
                 MySqlCommand command = new MySqlCommand(query, connection);
 
@@ -155,9 +305,9 @@ namespace Replit_C__AirlineReservationSystem
                 connection.Close();
 
                 if (rowsAffected > 0)
-                    return "UG";
+                    return "AG";
                 else
-                    return "UE";
+                    return "AE";
             }
         }
 

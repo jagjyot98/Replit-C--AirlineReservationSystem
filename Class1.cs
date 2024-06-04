@@ -11,6 +11,7 @@ using Replit_C__AirlineReservationSystem;
 using System.Collections;
 using System.Linq;
 using System.Windows;
+using System.Xml.Linq;
 
 class Users
 {
@@ -18,14 +19,31 @@ class Users
     public string fullName;
     public string password;
 
-    private static Random random = new Random();
+    private static HashSet<string> usedUserIDs = new HashSet<string>();
 
-    public string newUser(string userName, string password)
+    public string newUser(bool adFlag, string userName, string password)
     {
+        DatabaseOperations DBops = new DatabaseOperations();
+        usedUserIDs = DBops.readDatabaseUserIDs();              ////////////////////
+
         this.fullName = userName;
         this.password = password;
-        this.userID = "UN" + random.Next(10000, 99999);
-        return userID;
+        if (!adFlag)
+        {
+            string randomUId;
+            Random rand = new Random();
+            do
+            {
+                randomUId = "UN" + rand.Next(10000, 99999);
+            } while (usedUserIDs.Contains(randomUId));
+
+            this.userID = randomUId;
+        }
+        else
+        {
+            return DBconsts.generateAdminID(userName);
+        }
+        return this.userID;
     }
 
 }
@@ -36,7 +54,7 @@ class Flight																//Flight Class
     public string flightDestination;
     public char[] seats = new char[10];
 
-    private static Random random = new Random();
+    private static HashSet<string> usedFlightCodes = new HashSet<string>();
 
     public List<int> availableSeats()               //getting the list of available seats of a flight
     {
@@ -51,15 +69,21 @@ class Flight																//Flight Class
 
     public void newFlight(string desti)                     //to create a new flight
     {
-        //Console.Write("Enter your destination: ");
-        //flightDestination = Console.ReadLine();
+        DatabaseOperations DBops = new DatabaseOperations();
+        usedFlightCodes = DBops.readDatabaseFlightCodes();
+
         this.flightDestination = desti;
-        this.flightCode = "FL" + random.Next(1000, 9999);            //generating a random unique flight code
+
+        string randomCode;
+        Random rand = new Random();
+        do {
+            randomCode = "FL" + rand.Next(1000, 9999);
+        } while (usedFlightCodes.Contains(randomCode));
+
+        this.flightCode = randomCode;
+
         for (int i = 0; i < seats.Length; i++)
             seats[i] = 'A';
-        //Console.ForegroundColor = ConsoleColor.Green;
-        //Console.WriteLine("\n Flight " + this.flightCode + " to " + this.flightDestination + " created with 10 seats.");
-        //Console.ResetColor();
     }
 
     public string displayFlight()             //to display flighs(s) details in the header pf program
@@ -87,27 +111,35 @@ class Flight																//Flight Class
 class Booking														//Booking class
 {
     public string name;
+    public string userId;////////
     public string flightcode;
     public int seatNo;
     public int BookingID;
+    private static HashSet<int> usedBookingIds = new HashSet<int>();
 
-    private static Random random = new Random();
+    //private static Random random = new Random();
 
-    public int newBooking(string name, string flightcode, int seatno)        //to create new booking
+    public int newBooking(string userId, string name, string flightcode, int seatno)        //to create new booking
     {
-        BookingID = new Random().Next(100, 500);            //generating random unique booking id
+        DatabaseOperations DBops = new DatabaseOperations();
+        usedBookingIds = DBops.readDatabaseBookingIDs();
+
+        this.userId = userId;
         this.flightcode = flightcode;
         this.name = name;
-        //Console.Write("Enter your name: ");
-        //name = Console.ReadLine();
         this.seatNo = seatno;
-        return BookingID;
+        Random rand = new Random();
+        do {
+            this.BookingID = rand.Next(100, 500);
+        } while (usedBookingIds.Contains(this.BookingID));
+
+        return this.BookingID;
     }
 
     public void displayBooking()                    //to display bookings when called
     {
         Console.WriteLine("Booking ID: " + BookingID);
-        Console.WriteLine("Flight Code: " + flightcode);
+        Console.WriteLine("Flight Code: " + flightcode);    //also display userID for session
         Console.WriteLine("Name: " + name);
         Console.WriteLine("Seat number: " + (seatNo + 1));
     }
