@@ -41,7 +41,7 @@ class Users
         }
         else
         {
-            return DBconsts.generateAdminID(userName);
+            this.userID = DBconsts.generateAdminID(userName);
         }
         return this.userID;
     }
@@ -51,6 +51,7 @@ class Users
 class Flight																//Flight Class
 {
     public string flightCode;
+    public string adminID;
     public string flightDestination;
     public char[] seats = new char[10];
 
@@ -67,11 +68,12 @@ class Flight																//Flight Class
         return count;
     }
 
-    public void newFlight(string desti)                     //to create a new flight
+    public void newFlight(string desti, string adminID)                     //to create a new flight
     {
         DatabaseOperations DBops = new DatabaseOperations();
         usedFlightCodes = DBops.readDatabaseFlightCodes();
 
+        this.adminID = adminID;
         this.flightDestination = desti;
 
         string randomCode;
@@ -93,7 +95,7 @@ class Flight																//Flight Class
         foreach (int seat in list)
             seats+=(seat + 1 + " ");  
 
-        string flight = "\nFlight Code: "+flightCode+ " to Destination: " + flightDestination+ "\nAvailable seats: "+seats+ "\n---------------------";
+        string flight = "Flight Code: "+this.flightCode+ " to Destination: " + this.flightDestination+ "\nAvailable seats: "+seats+ "\n---------------------";
         return flight;
 
         /*Console.ForegroundColor = ConsoleColor.Yellow;
@@ -136,12 +138,14 @@ class Booking														//Booking class
         return this.BookingID;
     }
 
-    public void displayBooking()                    //to display bookings when called
+    public string displayBooking()                    //to display bookings when called
     {
-        Console.WriteLine("Booking ID: " + BookingID);
-        Console.WriteLine("Flight Code: " + flightcode);    //also display userID for session
-        Console.WriteLine("Name: " + name);
-        Console.WriteLine("Seat number: " + (seatNo + 1));
+        string Booking = "Booking ID: " + this.BookingID + " Name: " + this.name + "\nFlight Code: " + this.flightcode + " Seat number: " + (this.seatNo + 1);
+        return Booking;
+        //Console.WriteLine("Booking ID: " + BookingID);
+        //Console.WriteLine("Flight Code: " + flightcode);    //also display userID for session
+        //Console.WriteLine("Name: " + name);
+        //Console.WriteLine("Seat number: " + (seatNo + 1));
     }
 }
 

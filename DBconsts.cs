@@ -71,8 +71,13 @@ namespace Replit_C__AirlineReservationSystem
 
         public static string readBookingsQuery()             //generates and returns query to read bookings table
         {
-            return "SELECT * FROM "+tableB;
+            return "SELECT * FROM " + tableB;
         }
+
+        //public static string readUserBookingsQuery()             //generates and returns query to read user bookings 
+        //{
+        //    return "SELECT * FROM "+tableB+" WHERE `UserID` = \""+GlobalSessionClass.currentUserID+"\"";
+        //}
 
         public static string readBookingIDsQuery()             //generates and returns query to read bookingIDs
         {
@@ -91,7 +96,7 @@ namespace Replit_C__AirlineReservationSystem
 
                 public static string readUserIDsQuery()             //generates and returns query to read adminIDs
                 {
-                    return "SELECT `userID` FROM " + tableA;
+                    return "SELECT `userID` FROM " + tableU;
                 }
 
         public static string createNewUserQuery(Users newUser)             //generates and returns query to create new User
@@ -99,14 +104,14 @@ namespace Replit_C__AirlineReservationSystem
             return "INSERT INTO "+tableU+" (userID, FullName, Password) VALUES (\"" + newUser.userID + "\", \"" + newUser.fullName + "\", \"" + newUser.password + "\")";
         }
 
-        public static string createNewAdUserQuery(Users newAdUser)             /////////////////////////////////generates and returns query to create new adUser
+        public static string createNewAdUserQuery(Users newAdUser, string CreatorAdminID)             /////////////////////////////////generates and returns query to create new adUser
         {
-            return "INSERT INTO " + tableA + " (adminID, adminName, adminPassword) VALUES (\"" + newAdUser.userID + "\", \"" + newAdUser.fullName + "\", \"" + newAdUser.password + "\")";
+            return "INSERT INTO " + tableA + " (adminID, CreatorAdminID, adminName, adminPassword) VALUES (\"" + newAdUser.userID + "\", \"" + CreatorAdminID + "\", \"" + newAdUser.fullName + "\", \"" + newAdUser.password + "\")";
         }
 
         public static string createNewFlightQuery(Flight newFlight)             //generates and returns query to create new flight
         {
-           return "INSERT INTO "+tableF+" (FlightCode, Destination, AvailableSeats) VALUES (\""+newFlight.flightCode+"\", \""+newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\")";
+           return "INSERT INTO "+tableF+" (FlightCode, AdminId, Destination, AvailableSeats) VALUES (\""+newFlight.flightCode+ "\", \""+newFlight.adminID+"\", \"" + newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\")";
         }
 
         public static string createNewBookingQuery(Booking newBooking)             //generates and returns query to create new booking
@@ -119,14 +124,14 @@ namespace Replit_C__AirlineReservationSystem
             return "UPDATE "+tableF+ " SET `AvailableSeats` = \""+new string(seatsUpdated)+"\" WHERE `flights`.`FlightCode` = \"" + flightcode + "\"";
         }
 
-        public static string deleteBookingQuery(int bookingID)             //generates and returns query to delete a booking
+        public static string deleteBookingQuery(int bookingID, string userID)             //generates and returns query to delete a booking
         {
-            return "DELETE FROM "+tableB+" WHERE `BookingID` = \""+bookingID+"\"";
+            return "DELETE FROM "+tableB+" WHERE `BookingID` = \""+bookingID+"\"AND `UserID` = \""+userID+"\"";
         }
 
-        public static string deleteFlightQuery(string flightcode)             //generates and returns query to delete a flight
+        public static string deleteFlightQuery(string flightcode, string adminID)             //generates and returns query to delete a flight
         {
-            return "DELETE FROM "+tableF+" WHERE `FlightCode` = \""+flightcode+"\"";
+            return "DELETE FROM "+tableF+" WHERE `FlightCode` = \""+flightcode+ "\"AND `AdminID` = \""+adminID+"\"";
         }
 
         public static string deleteFT_BookingsQuery(string flightcode)             //generates and returns query to delete bookings relatted to deleted flight

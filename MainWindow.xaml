@@ -9,21 +9,23 @@
     <Grid x:Name="backFromAdSignUpButton" Background="White">
         <Rectangle HorizontalAlignment="Center" Height="73" Stroke="Black" VerticalAlignment="Top" Width="586" Fill="#FF8AE7F3"/>
         <TextBlock x:Name="mainHeading" HorizontalAlignment="Center" Margin="0,12,0,0" TextWrapping="Wrap" Text="Airline Reservation System" VerticalAlignment="Top" FontSize="24" FontWeight="Bold" FontStyle="Italic"/>
-        <StackPanel Orientation="Horizontal" Margin="281,49,258,362">
+        <StackPanel Orientation="Horizontal" Margin="297,49,257,362">
             <TextBlock x:Name="noOfFlightsDisplay" TextWrapping="Wrap" Text="No. of Flights Available: " Foreground="#FFD72222" FontWeight="Bold" Width="160"/>
-            <TextBlock x:Name="noOfBookingsDisplay" TextWrapping="Wrap" Text="No. of Bookings in System: " Width="177" Margin="193,0,0,0"/>
+            <Label x:Name="welcomeLable" Content="" Margin="30,0,30,0" Width="109" FontStyle="Italic" FontWeight="Bold" />
+            <TextBlock x:Name="noOfBookingsDisplay" TextWrapping="Wrap" Text="No. of Bookings in System: " Width="177"/>
+
         </StackPanel>
-        <GroupBox x:Name="FlightGroup" Header="Add Flight" Margin="10,148,681,23" BorderBrush="#FF30A71F" Foreground="#FF21AE52" FontSize="16" BorderThickness="2,2,2,2" Visibility="Collapsed">
+        <GroupBox x:Name="FlightGroup" Header="Add Flight" Margin="10,252,681,10" BorderBrush="#FF30A71F" Foreground="#FF21AE52" FontSize="16" BorderThickness="2,2,2,2">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Height="46" VerticalAlignment="Top">
                     <Label Content="Enter Destination:" Width="104" Margin="0,10,0,0" Height="27" VerticalAlignment="Top" FontSize="12"/>
-                    <TextBox x:Name="FTDestinationInput" TextWrapping="Wrap" Width="120" Height="25" VerticalAlignment="Top" Margin="10,10,0,0" Padding="0,5,0,0" BorderBrush="Black" />
+                    <TextBox x:Name="FTDestinationInput" TextWrapping="Wrap" Width="120" Height="25" VerticalAlignment="Top" Margin="10,10,0,0" Padding="0,5,0,0" BorderBrush="Black" FontSize="12" />
                 </StackPanel>
                 <Button x:Name="FTSubmitButton" Content="Add Flight" Margin="0,10,0,0" Height="25" Width="89" Background="#FFDDDDDD" Click="FTSubmitButton_Click" FontSize="12" />
-                <Label x:Name="FTmessageDisplay" Width="330" Height="115" Margin="0,20,0,0" Padding="5,10,5,5" IsTabStop="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label x:Name="FTmessageDisplay" Width="330" Height="32" Margin="0,20,0,0" Padding="5,10,5,5" IsTabStop="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="BookingGroup" Header="New Booking" Margin="702,79,10,27" BorderBrush="Black">
+        <GroupBox x:Name="BookingGroup" Header="New Booking" Margin="702,79,10,27" BorderBrush="Black" Visibility="Collapsed">
             <StackPanel>
                 <StackPanel x:Name="FltCodeStackBK" Orientation="Horizontal" Height="46" VerticalAlignment="Top">
                     <Label Content="Enter FlightCode:" Width="104" Margin="0,10,0,0" Height="27" VerticalAlignment="Top"/>
@@ -73,7 +75,7 @@
                 </StackPanel>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="DelFlightGroup" HorizontalAlignment="Left" Height="272" Header="Delete Flight" Margin="682,139,0,0" VerticalAlignment="Top" Width="373" BorderBrush="#FFEB0000" BorderThickness="2,2,2,2" Foreground="#FFC92323" FontSize="16" Visibility="Collapsed">
+        <GroupBox x:Name="DelFlightGroup" HorizontalAlignment="Left" Height="272" Header="Delete Flight" Margin="682,152,0,0" VerticalAlignment="Top" Width="373" BorderBrush="#FFEB0000" BorderThickness="2,2,2,2" Foreground="#FFC92323" FontSize="16">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Height="54">
                     <Label x:Name="delFlightCodeHead" Content="Enter Flight Code:" Width="107" Margin="5,10,20,10" VerticalContentAlignment="Center" FontSize="12"/>
@@ -87,8 +89,8 @@
                 <Label x:Name="delFtMessageDisplay" Height="72" Width="328" Margin="0,20,0,0" FontSize="12" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Foreground="#FFE62020"/>
             </StackPanel>
         </GroupBox>
-        <ListBox x:Name="flightsDisplayListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,91,0,10" HorizontalAlignment="Center" Width="267" HorizontalContentAlignment="Center"/>
-        <GroupBox x:Name="SignUpAdGroup" HorizontalAlignment="Left" Height="106" Header="New Admin SignUp" Margin="847,23,0,0" VerticalAlignment="Top" Width="195" Foreground="#FF1A8FDC" FontWeight="Bold" BorderBrush="#FF2596DA" BorderThickness="2,2,2,2" Visibility="Collapsed">
+        <ListBox x:Name="flightsDisplayListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,91,0,10" HorizontalAlignment="Center" Width="267" HorizontalContentAlignment="Center" Visibility="Collapsed"/>
+        <GroupBox x:Name="SignUpAdGroup" HorizontalAlignment="Left" Height="106" Header="New Admin SignUp" Margin="847,23,0,0" VerticalAlignment="Top" Width="195" Foreground="#FF1A8FDC" FontWeight="Bold" BorderBrush="#FF2596DA" BorderThickness="2,2,2,2">
             <StackPanel>
                 <Label x:Name="adminSignUpHead" Content="Add a new Admin to the System..." Height="36" FontSize="11" FontWeight="Normal"/>
                 <Button x:Name="adminSignUpButton" Content="Admin SignUp" Width="126" FontWeight="Normal" Click="adminSignUpButton_Click">
@@ -101,7 +103,7 @@
                 </Button>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="adminSignUpGroup" Header="Admin SignUp" Margin="376,110,377,51" Visibility="Collapsed">
+        <GroupBox x:Name="adminSignUpGroup" Header="Admin SignUp" Margin="376,110,377,51">
             <StackPanel>
                 <Label x:Name="adminSignupMessage" Height="44" Width="279" HorizontalContentAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" Height="52">
@@ -116,7 +118,7 @@
                 <Button Content="&lt;-  Back" Width="74" Height="27" Margin="10,20,0,0" HorizontalAlignment="Left" Click="Button_Click"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="DelBookingGroup" HorizontalAlignment="Left" Height="129" Header="Delete Booking" Margin="10,295,0,0" VerticalAlignment="Top" Width="356" BorderBrush="#FFE82323" Foreground="#FFEB1010" BorderThickness="2,2,2,2" FontSize="16">
+        <GroupBox x:Name="DelBookingGroup" HorizontalAlignment="Left" Height="129" Header="Delete Booking" Margin="10,295,0,0" VerticalAlignment="Top" Width="356" BorderBrush="#FFE82323" Foreground="#FFEB1010" BorderThickness="2,2,2,2" FontSize="16" Visibility="Collapsed">
             <StackPanel>
                 <StackPanel Orientation="Horizontal" Height="41">
                     <Label Content="Enter Booking ID:" Margin="0,5,5,5" Width="119" FontSize="12"/>
@@ -130,9 +132,17 @@
                 <Label x:Name="delBookingMessage" Content="" Margin="0,10,0,0" Width="289" Height="46" FontSize="12"/>
             </StackPanel>
         </GroupBox>
-        <GroupBox x:Name="userBookingsGroup" HorizontalAlignment="Left" Height="211" Header="My Bookings" Margin="6,79,0,0" VerticalAlignment="Top" Width="360" BorderThickness="1,1,1,1" BorderBrush="Black">
-            <ListBox x:Name="userBookingsList" HorizontalAlignment="Left" Height="168" VerticalAlignment="Top" Width="335" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionChanged="ListBox_SelectionChanged" Margin="0,5,0,0" BorderThickness="0,0,0,0"/>
+        <GroupBox x:Name="userBookingsGroup" HorizontalAlignment="Left" Height="211" Header="My Bookings" Margin="6,79,0,0" VerticalAlignment="Top" Width="360" BorderThickness="1,1,1,1" BorderBrush="Black" Visibility="Collapsed">
+            <ListBox x:Name="userBookingsList" HorizontalAlignment="Left" Height="168" VerticalAlignment="Top" Width="335" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="0,5,0,0" BorderThickness="0,0,0,0"/>
 
+        </GroupBox>
+        <Button x:Name="logoutButton" Content="Log out" HorizontalAlignment="Left" Margin="71,36,0,0" VerticalAlignment="Top" RenderTransformOrigin="1.966,0.904" Width="85" Foreground="Black" Height="25" Click="logoutButton_Click">
+            <Button.Background>
+                <SolidColorBrush Color="#FFE82020" Opacity="0.5"/>
+            </Button.Background>
+        </Button>
+        <GroupBox x:Name="adminFlightsGroup" HorizontalAlignment="Left" Height="171" Header="My Flights" Margin="10,76,0,0" VerticalAlignment="Top" Width="374" BorderThickness="2,2,2,2" BorderBrush="Black" FontSize="16">
+            <ListBox x:Name="adminFlightsList" d:ItemsSource="{d:SampleData ItemCount=5}" BorderThickness="0,0,0,0" FontSize="12"/>
         </GroupBox>
     </Grid>
 </Window>

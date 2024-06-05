@@ -76,12 +76,12 @@ namespace Replit_C__AirlineReservationSystem
                         }
                         return 'G';             //  G = all Good with Seats updation
                     }
-                    Console.WriteLine(new List<int> { 1, 2, 3, 4, 5 });
+                    //Console.WriteLine(new List<int> { 1, 2, 3, 4, 5 });
                     //Console.WriteLine(flight.availableSeats().ToString());
                 }
                
             }
-            Console.WriteLine(FlightsList[0].flightDestination);
+            //Console.WriteLine(FlightsList[0].flightDestination);
             return 'S';             //  S = Seat not available
         }
 
@@ -139,10 +139,10 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        public string addNewFlight(string desti)                    //add new FLIGHTS
+        public string addNewFlight(string desti, string userID)                    //add new FLIGHTS
         {
             Flight newFlight = new Flight();
-            newFlight.newFlight(desti);
+            newFlight.newFlight(desti, userID);
 
             string newFlightStatus = DBops.createNewFlight(newFlight);
 
@@ -300,7 +300,7 @@ namespace Replit_C__AirlineReservationSystem
             string returnMessage = "";
             foreach (Booking booking in BookingsList)
             {
-                if (booking.BookingID == bookingID)         //bookingID exists or not
+                if (booking.BookingID == bookingID && booking.userId == GlobalSessionClass.currentUserID)         //bookingID exists or not
                 {
                     found = true;
                     foreach (Flight flight in FlightsList)
@@ -314,7 +314,7 @@ namespace Replit_C__AirlineReservationSystem
                                 BookingsList.Remove(booking);       //simply removing booking objcet from system collection
                                 //Console.WriteLine();
                                 //Console.ForegroundColor = ConsoleColor.Green;
-                                returnMessage =  "Booking Deleted from Bk successfully.";
+                                returnMessage =  "Booking "+bookingID+" Deleted from Bk successfully !";
                                 //Console.ResetColor();
 
                                 flight.seats[booking.seatNo] = 'A';         //updating seat status in system collection of seats
@@ -322,7 +322,7 @@ namespace Replit_C__AirlineReservationSystem
                                 if (DBops.seatsDatabaseUpdation(flight.seats, flight.flightCode))     //Updating available seats in database with system collection 
                                 {
                                     //Console.ForegroundColor = ConsoleColor.Green;
-                                    returnMessage += "\nBooking Deleted from Ft successfully !";
+                                    returnMessage += "\nBooking "+bookingID+" Deleted from Ft successfully !";
                                     //Console.ResetColor();
                                 }
                                 else
@@ -357,20 +357,20 @@ namespace Replit_C__AirlineReservationSystem
 
         public string deleteFlight(string flightCode)                 //delete flight with flight code
         {
-            Boolean found = false;
+            //Boolean found = false;
 
             foreach (Flight flight in FlightsList)
             {
-                if (flight.flightCode == flightCode)            //chceking whether flight exists or not
+                if (flight.flightCode == flightCode && flight.adminID == GlobalSessionClass.currentUserID)            //chceking whether flight exists or not
                 {
-                    found = true;
+                    //found = true;
                     if (DBops.deleteFlight(flightCode) == "FDG")       //if found, delete flight data from Flights database
                     {
                         if (DBops.deleteFT_Bookings(flightCode) == "BDG")      //delete bookings related to deleted flight
                         {
                             FlightsList.Remove(flight);
                             BookingsList = DBops.readDatabaseBK();
-                            return "Flight Deleted Successfully with all Related Bookings!";
+                            return "Flight "+flightCode+" Deleted Successfully with all Related Bookings!";
                         }
                         /*else              //Not neccessary deleted flight would have related bookings 
                         {
@@ -403,7 +403,7 @@ namespace Replit_C__AirlineReservationSystem
         {
             InitializeComponent();
 
-            LoginGroup.Visibility = Visibility.Visible;
+           initialScreenLayout();
             refreshContent();
         }
 
@@ -430,6 +430,44 @@ namespace Replit_C__AirlineReservationSystem
             bookingsCount();
             flightsCount();
             displayAllFlights();
+        }
+
+        public void initialScreenLayout()
+        {
+            LoginGroup.Visibility = Visibility.Visible;
+            logoutButton.Visibility = Visibility.Collapsed;
+            BookingGroup.Visibility = Visibility.Collapsed;
+            flightsDisplayListBox.Visibility = Visibility.Collapsed;
+            DelBookingGroup.Visibility = Visibility.Collapsed;
+            userBookingsGroup.Visibility = Visibility.Collapsed;
+
+            FlightGroup.Visibility = Visibility.Collapsed;
+            DelFlightGroup.Visibility = Visibility.Collapsed;
+            SignUpAdGroup.Visibility = Visibility.Collapsed;     //(Maybe a Button to another group)
+            adminSignUpGroup.Visibility = Visibility.Collapsed;
+            adminFlightsGroup.Visibility = Visibility.Collapsed;
+        }
+
+        public void userScreenLayout()
+        {
+            /////////////////user functions: add Booking, see flights, search flight
+
+            BookingGroup.Visibility = Visibility.Visible;
+            flightsDisplayListBox.Visibility = Visibility.Visible;
+            DelBookingGroup.Visibility = Visibility.Visible;
+            userBookingsGroup.Visibility = Visibility.Visible;
+        }
+
+        public void adminScreenLayout()
+        {
+            //////////////////admin funtions: add Flight, see flights, delete flight, Signup another Admin
+
+            FlightGroup.Visibility = Visibility.Visible;
+            flightsDisplayListBox.Visibility = Visibility.Visible;
+            DelFlightGroup.Visibility = Visibility.Visible;
+            SignUpAdGroup.Visibility = Visibility.Visible;     //(Maybe a Button to another group)
+            adminFlightsGroup.Visibility= Visibility.Visible;
+            
         }
 
         public void updateFlights()
@@ -460,6 +498,51 @@ namespace Replit_C__AirlineReservationSystem
                 }
             }
         }
+
+        public void displayUserBookings()             //display user bookings
+        {
+            //flightsDisplayListBox.Items.Clear();
+            //List<Booking> userBookings = new List<Booking>();
+            //userBookings = DBops.readDatabaseUserBooKings();
+            bool foundflag = false; 
+            userBookingsList.Items.Clear();
+            if (airline.BookingsList.Count != 0)
+            {
+                for (int i = 0; i < airline.BookingsList.Count; i++)
+                {
+                    if (airline.BookingsList[i].userId == GlobalSessionClass.currentUserID)
+                    { 
+                        foundflag = true;
+                        userBookingsList.Items.Add(airline.BookingsList[i].displayBooking()); 
+                    }
+                }
+            }
+            if(!foundflag)
+                userBookingsList.Items.Add("You have made 0 Bookings.");
+        }
+
+        public void displayAdminFlights()             //display admin flights
+        {
+            //flightsDisplayListBox.Items.Clear();
+            //List<Booking> userBookings = new List<Booking>();
+            //userBookings = DBops.readDatabaseUserBooKings();
+            bool foundflag = false;
+            adminFlightsList.Items.Clear();
+            if (airline.FlightsList.Count != 0)
+            {
+                for (int i = 0; i < airline.FlightsList.Count; i++)
+                {
+                    if (airline.FlightsList[i].adminID == GlobalSessionClass.currentUserID)
+                    { 
+                        foundflag= true;
+                        adminFlightsList.Items.Add(airline.FlightsList[i].displayFlight()); 
+                    }
+                }
+            }
+            if(!foundflag)
+                adminFlightsList.Items.Add("You have added 0 Flights.");
+        }
+
         private void loginSubmitButton_Click(object sender, RoutedEventArgs e)
         {
             if (userNameTextbox.Text.Length == 0 || passwordTextbox.Text.Length == 0)
@@ -472,21 +555,23 @@ namespace Replit_C__AirlineReservationSystem
             else
             {
                 string loginResult = DBops.login(userNameTextbox.Text, passwordTextbox.Text);
+                userNameTextbox.Text = string.Empty;
+                passwordTextbox.Text = string.Empty;
+                LoginGroup.Visibility = Visibility.Collapsed;
+                welcomeLable.Content = "Welcome " + GlobalSessionClass.currentUserName;
+                logoutButton.Visibility = Visibility.Visible;
+
                 if ("UG" == loginResult)
                 {
-                    /////////////////user functions: add Booking, see flights, search flight
-                    LoginGroup.Visibility = Visibility.Collapsed;
-                    //FlightGroup.Visibility = Visibility.Visible;
-                    BookingGroup.Visibility = Visibility.Visible;
-                    flightsDisplayListBox.Visibility = Visibility.Visible;
+                    userScreenLayout();
+                    displayUserBookings();
+                    
                 }else if("AG" == loginResult)
                 {
                     //////////////////admin funtions: add Flight, see flights, delete flight, Signup another Admin
-                    LoginGroup.Visibility = Visibility.Collapsed;
-                    FlightGroup.Visibility= Visibility.Visible;
-                    flightsDisplayListBox.Visibility= Visibility.Visible;
-                    DelFlightGroup.Visibility= Visibility.Visible;
-                    SignUpAdGroup.Visibility= Visibility.Visible;     //(Maybe a Button to another group)
+
+                    adminScreenLayout();
+                    displayAdminFlights();
                 }
 
                 else
@@ -505,15 +590,16 @@ namespace Replit_C__AirlineReservationSystem
                 //FTmessageDisplay.Content = string.Empty;
                 FTmessageDisplay.Content = "Please provide Destination for flight.";
             }
-            else 
+            else if(GlobalSessionClass.currentUserID.Length > 0)
             {
                 //FTmessageDisplay.Content = string.Empty;
-                FTmessageDisplay.Content = airline.addNewFlight(FTDestinationInput.Text);
+                FTmessageDisplay.Content = airline.addNewFlight(FTDestinationInput.Text, GlobalSessionClass.currentUserID);
                 FTDestinationInput.Text = string.Empty;
                 
                 updateFlights();
                 flightsCount();
                 displayAllFlights();
+                displayAdminFlights();
             }
         }
 
@@ -524,7 +610,7 @@ namespace Replit_C__AirlineReservationSystem
                 //BKmessageDisplay.Content = string.Empty;
                 BKmessageDisplay.Content = "Missed details";
             }
-            else
+            else if (GlobalSessionClass.currentUserID.Length > 0)
             {
                 //BKmessageDisplay.Content = string.Empty;
                 int seatNo;
@@ -538,6 +624,7 @@ namespace Replit_C__AirlineReservationSystem
                 updateFlights();
                 bookingsCount();
                 displayAllFlights();
+                displayUserBookings();
             }
         }
 
@@ -570,11 +657,12 @@ namespace Replit_C__AirlineReservationSystem
 
         private void delFlightButton_Click(object sender, RoutedEventArgs e)
         {
-            if(delFlightCodeInput.Text.Length > 0)
+            if(delFlightCodeInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0)
             {
                 delFtMessageDisplay.Content = airline.deleteFlight(delFlightCodeInput.Text);
                 delFlightCodeInput.Text = string.Empty;
                 refreshContent();
+                displayAdminFlights();
             }
             else
             {
@@ -592,7 +680,7 @@ namespace Replit_C__AirlineReservationSystem
 
         private void adminSignUpSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (adminNameInput.Text.Length > 0 && adminPasswordInput.Text.Length > 0)
+            if (adminNameInput.Text.Length > 0 && adminPasswordInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0)
             {
 
                 adminSignupMessage.Content = airline.addNewUser(true, adminNameInput.Text, adminPasswordInput.Text);
@@ -608,6 +696,9 @@ namespace Replit_C__AirlineReservationSystem
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             adminSignUpGroup.Visibility = Visibility.Collapsed;
+            adminNameInput.Text = string.Empty;
+            adminPasswordInput.Text = string.Empty;
+            adminSignupMessage.Content= string.Empty;
             FlightGroup.Visibility = Visibility.Visible;
             flightsDisplayListBox.Visibility = Visibility.Visible;
             DelFlightGroup.Visibility = Visibility.Visible;
@@ -615,15 +706,25 @@ namespace Replit_C__AirlineReservationSystem
 
         private void delBookingButton_Click(object sender, RoutedEventArgs e)
         {
-            if(delBookingIDInput.Text.Length > 0) 
+            if(delBookingIDInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0) 
             {
                 int bookingId;
                 Int32.TryParse(delBookingIDInput.Text, out bookingId);
 
-                delBookingMessage.Content = airline.deleteBooking(bookingId);
+                delBookingMessage.Content = airline.deleteBooking(bookingId);   ////////////////////////////
+                refreshContent();
+                displayUserBookings();
 
                 delBookingIDInput.Text = string.Empty;
             }
+        }
+
+        private void logoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            GlobalSessionClass.currentUserID = string.Empty;
+            GlobalSessionClass.currentUserName = string.Empty;
+            initialScreenLayout();
+            welcomeLable.Content = string.Empty;
         }
     }
 }
