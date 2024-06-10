@@ -1,15 +1,18 @@
-﻿/*Notes :		1.Only an admin (after login in) can Signup another admin.
- *              2.Add fucntionality for delete flight, search booking, delete booking, display bookings.
- *              3.MIGHT want to seperate out fucntionalites for Admin and User based on login credentials
- *              
+﻿/*Notes :		1. Input pattern checking:
+ *                      Login: username, password   Done
+ *                      SignUp: Name, password      Done
+ *                      AdSignUp: NAme, password    Done
+ *                      Flights:
+ *                          Insertion: Destination  Done
+ *                          Deletion: FlightCode    Done
+ *                      Bookings:
+ *                          Booking: Name, FlightCode, seat Number  Done
+ *                          Deletion: Booking ID    Done
+ *              3. Add secure measures to password during Login and signup (SecureString Class)
+ *             
  *                  Funtions for Admin: add Flight, delete flight, Signup another Admin  <- All Done        (Add Sessions and session based logs)
  *                  Funtions for User: Signup as User, add Booking, see flights, search flight
  *              
- *              4.Screen adjusted for admins, link functionalities (added ui for delete flight), add for new admin signup
- *              
- *              5.Unique Ids and Codes setup linked with database
- *              6.Back button Added at admin signup\
- *              7. Session generation added, bookings taking current user id
 
 */
 using System;
@@ -408,6 +411,12 @@ namespace Replit_C__AirlineReservationSystem
         }
 
         Airline airline = new Airline();
+        Regex regexUId = new Regex(DBconsts.returnUIdPattern());
+        Regex regexAId = new Regex(DBconsts.returnAdIdPattern());
+        Regex regexPass = new Regex(DBconsts.returnUPassPattern());
+        Regex regexDest = new Regex(DBconsts.returnDestPattern());
+        Regex regexFlightCode = new Regex(DBconsts.returnflightCodePattern());
+        Regex regexBookingID = new Regex(DBconsts.returnbookingIdPattern());
 
         //List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
         //List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
@@ -543,20 +552,13 @@ namespace Replit_C__AirlineReservationSystem
                 adminFlightsList.Items.Add("You have added 0 Flights.");
         }
 
-        private void loginSubmitButton_Click(object sender, RoutedEventArgs e)
+        private void loginSubmitButton_Click(object sender, RoutedEventArgs e)      //////////////////////////////////
         {
-            if (userNameTextbox.Text.Length == 0 || passwordTextbox.Text.Length == 0)
+            if ( (regexUId.IsMatch(userNameTextbox.Text) || regexAId.IsMatch(userNameTextbox.Text) ) && regexPass.IsMatch(passwordTextbox.Password))//Text.Length == 0)
             {
-
-                loginErrorMessage.Content = "Missed Credential !!";
+                string loginResult = DBops.login(userNameTextbox.Text, passwordTextbox.Password);
                 userNameTextbox.Text = string.Empty;
-                passwordTextbox.Text = string.Empty;
-            }
-            else
-            {
-                string loginResult = DBops.login(userNameTextbox.Text, passwordTextbox.Text);
-                userNameTextbox.Text = string.Empty;
-                passwordTextbox.Text = string.Empty;
+                passwordTextbox.Clear();
                 LoginGroup.Visibility = Visibility.Collapsed;
                 welcomeLable.Content = "Welcome " + GlobalSessionClass.currentUserName;
                 logoutButton.Visibility = Visibility.Visible;
@@ -565,8 +567,9 @@ namespace Replit_C__AirlineReservationSystem
                 {
                     userScreenLayout();
                     displayUserBookings();
-                    
-                }else if("AG" == loginResult)
+
+                }
+                else if ("AG" == loginResult)
                 {
                     //////////////////admin funtions: add Flight, see flights, delete flight, Signup another Admin
 
@@ -578,44 +581,43 @@ namespace Replit_C__AirlineReservationSystem
                 {
                     loginErrorMessage.Content = loginResult;//"Invalid Credentials !!";
                     userNameTextbox.Text = string.Empty;
-                    passwordTextbox.Text = string.Empty;
+                    passwordTextbox.Clear();
                 }
+            }
+            else
+            {
+                loginErrorMessage.Content = "Invalid Input !!";
             }
         }
 
         private void FTSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if(FTDestinationInput.Text.Length == 0)
-            {
-                //FTmessageDisplay.Content = string.Empty;
-                FTmessageDisplay.Content = "Please provide Destination for flight.";
-            }
-            else if(GlobalSessionClass.currentUserID.Length > 0)
+            if(regexDest.IsMatch(FTDestinationInput.Text) && GlobalSessionClass.currentUserID.Length > 0)
             {
                 //FTmessageDisplay.Content = string.Empty;
                 FTmessageDisplay.Content = airline.addNewFlight(FTDestinationInput.Text, GlobalSessionClass.currentUserID);
                 FTDestinationInput.Text = string.Empty;
-                
+
                 updateFlights();
                 flightsCount();
                 displayAllFlights();
                 displayAdminFlights();
             }
+            else
+            {
+                //FTmessageDisplay.Content = string.Empty;  
+                FTmessageDisplay.Content = "Please provide Destination for flight.";
+            }
         }
 
         private void BKSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (BKFlightCodeInput.Text.Length == 0 || BKSeatNoInput.Text.Length == 0 || BKNameInput.Text.Length == 0)
-            {
-                //BKmessageDisplay.Content = string.Empty;
-                BKmessageDisplay.Content = "Missed details";
-            }
-            else if (GlobalSessionClass.currentUserID.Length > 0)
+            if (regexFlightCode.IsMatch(BKFlightCodeInput.Text) && BKSeatNoInput.Text.Length > 0 && BKNameInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0)
             {
                 //BKmessageDisplay.Content = string.Empty;
                 int seatNo;
                 int.TryParse(BKSeatNoInput.Text, out seatNo);
-                BKmessageDisplay.Content = airline.addNewBooking(GlobalSessionClass.currentUserID,BKNameInput.Text, BKFlightCodeInput.Text,seatNo);
+                BKmessageDisplay.Content = airline.addNewBooking(GlobalSessionClass.currentUserID, BKNameInput.Text, BKFlightCodeInput.Text, seatNo);
                 BKFlightCodeInput.Text = string.Empty;
                 BKSeatNoInput.Text = string.Empty;
                 BKNameInput.Text = string.Empty;
@@ -625,6 +627,12 @@ namespace Replit_C__AirlineReservationSystem
                 bookingsCount();
                 displayAllFlights();
                 displayUserBookings();
+                
+            }
+            else
+            {
+                //BKmessageDisplay.Content = string.Empty;
+                BKmessageDisplay.Content = "Missed details";
             }
         }
 
@@ -642,22 +650,22 @@ namespace Replit_C__AirlineReservationSystem
 
         private void signupSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if(fullNameInput.Text.Length > 0 && passwordInput.Text.Length > 0) 
+            if (regexPass.IsMatch(passwordTextbox.Password) && fullNameInput.Text.Length > 0) 
             {
-
-                signupErrorMessage.Content = airline.addNewUser(false,fullNameInput.Text,passwordInput.Text);
+                //(regexUId.IsMatch(userNameTextbox.Text) &&
+                signupErrorMessage.Content = airline.addNewUser(false,fullNameInput.Text,passwordInput.Password);
                 fullNameInput.Text = string.Empty;
-                passwordInput.Text = string.Empty;
+                passwordInput.Clear();
             }
             else
             {
-                signupErrorMessage.Content = "Missed detais..";
+                signupErrorMessage.Content = "Invalid Input !!";
             }
         }
 
         private void delFlightButton_Click(object sender, RoutedEventArgs e)
         {
-            if(delFlightCodeInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0)
+            if(regexFlightCode.IsMatch(delFlightCodeInput.Text) && GlobalSessionClass.currentUserID.Length > 0)
             {
                 delFtMessageDisplay.Content = airline.deleteFlight(delFlightCodeInput.Text);
                 delFlightCodeInput.Text = string.Empty;
@@ -673,6 +681,7 @@ namespace Replit_C__AirlineReservationSystem
         private void adminSignUpButton_Click(object sender, RoutedEventArgs e)
         {
             FlightGroup.Visibility = Visibility.Collapsed;
+            adminFlightsGroup.Visibility = Visibility.Collapsed;
             flightsDisplayListBox.Visibility = Visibility.Collapsed;
             DelFlightGroup.Visibility = Visibility.Collapsed;
             adminSignUpGroup.Visibility= Visibility.Visible;
@@ -680,33 +689,34 @@ namespace Replit_C__AirlineReservationSystem
 
         private void adminSignUpSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (adminNameInput.Text.Length > 0 && adminPasswordInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0)
+            if (adminNameInput.Text.Length > 0 && regexPass.IsMatch(adminPasswordInput.Password) && GlobalSessionClass.currentUserID.Length > 0)
             {
-
-                adminSignupMessage.Content = airline.addNewUser(true, adminNameInput.Text, adminPasswordInput.Text);
-                fullNameInput.Text = string.Empty;
-                passwordInput.Text = string.Empty;
+                adminSignupMessage.Content = airline.addNewUser(true, adminNameInput.Text, adminPasswordInput.Password);
+                adminNameInput.Text = string.Empty; /////////////////////////
+                adminPasswordInput.Clear();
             }
             else
             {
-                signupErrorMessage.Content = "Missed detais..";
+                adminSignupMessage.Content = "Missed detais..";
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void backToAdminButton_Click(object sender, RoutedEventArgs e)
         {
             adminSignUpGroup.Visibility = Visibility.Collapsed;
             adminNameInput.Text = string.Empty;
-            adminPasswordInput.Text = string.Empty;
+            adminPasswordInput.Clear();
             adminSignupMessage.Content= string.Empty;
+
             FlightGroup.Visibility = Visibility.Visible;
+            adminFlightsGroup.Visibility= Visibility.Visible;
             flightsDisplayListBox.Visibility = Visibility.Visible;
             DelFlightGroup.Visibility = Visibility.Visible;
         }
 
         private void delBookingButton_Click(object sender, RoutedEventArgs e)
         {
-            if(delBookingIDInput.Text.Length > 0 && GlobalSessionClass.currentUserID.Length > 0) 
+            if(regexBookingID.IsMatch(delBookingIDInput.Text) && GlobalSessionClass.currentUserID.Length > 0) 
             {
                 int bookingId;
                 Int32.TryParse(delBookingIDInput.Text, out bookingId);

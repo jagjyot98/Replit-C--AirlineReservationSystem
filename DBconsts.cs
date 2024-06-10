@@ -25,7 +25,13 @@ namespace Replit_C__AirlineReservationSystem
         private static string tableF = "flights";
         private static string tableB = "bookings";
 
+        private static string uIdpattern = @"^UN\d{5}$";
         private static string adIdpattern = @"^[A-Z]{2}\d{3}[A-Z]{3}\d{3}[A-Z]{2}$";
+        private static string uPassPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$";
+        
+        private static string destinationPattern = @"^[a-zA-Z]{3,30}$";
+        private static string flightCodePattern = @"^FL\d{4}$";
+        private static string bookingIdPattern = @"^\d{3}$";
 
         private static HashSet<string> usedAdminIDs = new HashSet<string>();
 
@@ -52,6 +58,31 @@ namespace Replit_C__AirlineReservationSystem
         public static string returnAdIdPattern()
         {
             return adIdpattern;
+        }
+
+        public static string returnUIdPattern()
+        {
+            return uIdpattern;
+        }
+
+        public static string returnUPassPattern()
+        {
+            return uPassPattern;
+        }
+
+        public static string returnDestPattern()
+        {
+            return destinationPattern;
+        }
+
+        public static string returnflightCodePattern()
+        {
+            return flightCodePattern;
+        }
+
+        public static string returnbookingIdPattern()
+        {
+            return bookingIdPattern;
         }
 
         public static string readLoginQuery(string userID, string password) 
