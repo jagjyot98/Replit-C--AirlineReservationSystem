@@ -1,17 +1,10 @@
-﻿/*Notes :		1. Input pattern checking:
- *                      Login: username, password   Done
- *                      SignUp: Name, password      Done
- *                      AdSignUp: NAme, password    Done
- *                      Flights:
- *                          Insertion: Destination  Done
- *                          Deletion: FlightCode    Done
- *                      Bookings:
- *                          Booking: Name, FlightCode, seat Number  Done
- *                          Deletion: Booking ID    Done
+﻿/*Notes :		
  *              3. Add secure measures to password during Login and signup (SecureString Class)
  *             
  *                  Funtions for Admin: add Flight, delete flight, Signup another Admin  <- All Done        (Add Sessions and session based logs)
  *                  Funtions for User: Signup as User, add Booking, see flights, search flight
+ *                     
+ *              6. Can also create archive's in databse for deleted items
  *              
 
 */
@@ -44,22 +37,6 @@ namespace Replit_C__AirlineReservationSystem
 
         DatabaseOperations DBops = new DatabaseOperations();
 
-
-
-
-        /*public void updateFlights()
-        {
-            FlightsList.Clear();      //clearing previous data collected before updation
-
-            FlightsList = DBops.readDatabaseFT().Cast<Flight>().ToList();
-        }
-
-        public void updateBookings()
-        {
-            BookingsList.Clear();      //clearing previous data collected before updation
-
-            BookingsList = DBops.readDatabaseBK().Cast<Booking>().ToList();
-        }*/
         public char seatAvailability(string flightcode, int seatno)               //Chceking seat availablity and marking it (R)eserved it for booking
         {
 
@@ -167,30 +144,6 @@ namespace Replit_C__AirlineReservationSystem
             }
         }
 
-        //public string addNewAdUser(string userName, string password)                    //add new FLIGHTS
-        //{
-        //    Users newAdUser = new Users();
-        //    string userID = newAdUser.newUser(true,userName, password);      ////////////////////////
-        //    string newUserStatus = DBops.createNewAdUser(newAdUser);
-
-        //    if (newUserStatus == "AG")
-        //    {
-        //        //FlightsList = DBops.readDatabaseFT();
-        //        return "New Admin Created with ID: " + userID + "\nTry Login..";
-        //        //Console.ForegroundColor = ConsoleColor.Green;
-        //        //Console.WriteLine("Flight Data Inserted successfully.");
-        //        //Console.ResetColor();
-        //    }
-        //    else //if (newFlightStatus == "FE")
-        //    {
-        //        return "Database Ut Updation Error !";
-        //        /*Console.WriteLine();
-        //        Console.ForegroundColor = ConsoleColor.Red;
-        //        Console.WriteLine(" Database Ft Updation Error !");
-        //        Console.ResetColor();*/
-        //    }
-        //}
-
         public string addNewUser(bool adflag, string userName, string password)                    //add new FLIGHTS
         {
             Users newUser = new Users();
@@ -212,89 +165,6 @@ namespace Replit_C__AirlineReservationSystem
                 return "New Admin Created with ID: " + userID + "\nTry Login..";
             }
             return "Database Ut Updation Error !";
-        }
-
-        public void displayAllBookings()            // display all bookings
-        {
-            if (BookingsList.Count != 0)
-            {
-                for (int i = 0; i < BookingsList.Count; i++)
-                {
-                    Console.WriteLine(i + 1);
-                    BookingsList[i].displayBooking();
-                    foreach (Flight flight in FlightsList)
-                    {
-                        if (flight.flightCode == BookingsList[i].flightcode)
-                        {
-                            Console.WriteLine("Destination: " + flight.flightDestination);
-                        }
-                    }
-                    Console.WriteLine("-----------------");
-                }
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No Bookings found in System !");
-                Console.ResetColor();
-            }
-        }
-
-        /*public void displayAllFlights()				//display all flights
-        {
-            if (FlightsList.Count != 0)
-            {
-                for (int i = 0; i < FlightsList.Count; i++)
-                {
-                    Console.WriteLine("\n" + (i + 1));
-                    FlightsList[i].displayFlight();
-                    Console.WriteLine("\n---------------------");
-                }
-            }
-        }*/
-
-        public void searchBooking(int bookingID)                    //search booking with booking id
-        {
-            Boolean found = false;
-            foreach (Booking booking in BookingsList)
-            {
-                if (booking.BookingID == bookingID)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nMatch Found:");
-                    Console.ResetColor();
-                    booking.displayBooking();
-                    found = true;
-                }
-            }
-            if (!found)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No Match Found !");
-                Console.ResetColor();
-            }
-        }
-
-        public void searchFlight(String flightCode)                 //search flight with flight code
-        {
-            Boolean found = false;
-            foreach (Flight flight in FlightsList)
-            {
-                if (flight.flightCode == flightCode)
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nMatch Found:");
-                    Console.ResetColor();
-                    flight.displayFlight();
-                    found = true;
-                }
-            }
-            if (!found)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No Match Found !");
-                Console.ResetColor();
-            }
         }
 
         public string deleteBooking(int bookingID)                    //delete booking with booking id
@@ -650,10 +520,10 @@ namespace Replit_C__AirlineReservationSystem
 
         private void signupSubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            if (regexPass.IsMatch(passwordTextbox.Password) && fullNameInput.Text.Length > 0) 
+            if (regexPass.IsMatch(passwordInput.Password) && fullNameInput.Text.Length > 0)
             {
                 //(regexUId.IsMatch(userNameTextbox.Text) &&
-                signupErrorMessage.Content = airline.addNewUser(false,fullNameInput.Text,passwordInput.Password);
+                signupErrorMessage.Content = airline.addNewUser(false, fullNameInput.Text, passwordInput.Password);
                 fullNameInput.Text = string.Empty;
                 passwordInput.Clear();
             }
@@ -731,8 +601,8 @@ namespace Replit_C__AirlineReservationSystem
 
         private void logoutButton_Click(object sender, RoutedEventArgs e)
         {
-            GlobalSessionClass.currentUserID = string.Empty;
-            GlobalSessionClass.currentUserName = string.Empty;
+            GlobalSessionClass.LogOutTimeStamp = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt");
+            DBops.createNewLog();
             initialScreenLayout();
             welcomeLable.Content = string.Empty;
         }

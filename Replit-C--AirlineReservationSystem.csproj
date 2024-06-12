@@ -105,6 +105,7 @@
     <Compile Include="DatabaseOperations.cs" />
     <Compile Include="DBconsts.cs" />
     <Compile Include="GlobalSessionClass.cs" />
+    <Compile Include="GlobalSessionClassHelpers.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>

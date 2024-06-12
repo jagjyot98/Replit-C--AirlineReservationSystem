@@ -24,6 +24,7 @@ namespace Replit_C__AirlineReservationSystem
         private static string tableA = "admin";
         private static string tableF = "flights";
         private static string tableB = "bookings";
+        private static string tableL = "LoginLogs";
 
         private static string uIdpattern = @"^UN\d{5}$";
         private static string adIdpattern = @"^[A-Z]{2}\d{3}[A-Z]{3}\d{3}[A-Z]{2}$";
@@ -105,10 +106,10 @@ namespace Replit_C__AirlineReservationSystem
             return "SELECT * FROM " + tableB;
         }
 
-        //public static string readUserBookingsQuery()             //generates and returns query to read user bookings 
-        //{
-        //    return "SELECT * FROM "+tableB+" WHERE `UserID` = \""+GlobalSessionClass.currentUserID+"\"";
-        //}
+        public static string readLogIDsQuery()             //generates and returns query to read bookingIDs
+        {
+            return "SELECT `LogID` FROM " + tableL;
+        }
 
         public static string readBookingIDsQuery()             //generates and returns query to read bookingIDs
         {
@@ -120,34 +121,39 @@ namespace Replit_C__AirlineReservationSystem
            return "SELECT `FlightCode` FROM " + tableF;
         }
 
-                public static string readAdminIDsQuery()             //generates and returns query to read adminIDs
-                {
-                    return "SELECT `adminID` FROM " + tableA;
-                }
+        public static string readAdminIDsQuery()             //generates and returns query to read adminIDs
+        {
+           return "SELECT `adminID` FROM " + tableA;
+        }
 
-                public static string readUserIDsQuery()             //generates and returns query to read adminIDs
-                {
-                    return "SELECT `userID` FROM " + tableU;
-                }
+        public static string readUserIDsQuery()             //generates and returns query to read adminIDs
+        {
+           return "SELECT `userID` FROM " + tableU;
+        }
+
+        public static string createNewLogQuery()             //generates and returns query to create new User
+        {
+            return "INSERT INTO " + tableL + " (LogID, LogInTimeStamp, LogOutTimeStamp, LogUserID, LogUserName) VALUES (\"" + GlobalSessionClass.LogID + "\", \"" + GlobalSessionClass.LogInTimeStamp + "\", \"" + GlobalSessionClass.LogOutTimeStamp + "\", \"" + GlobalSessionClass.currentUserID + "\", \"" + GlobalSessionClass.currentUserName + "\")";
+        }
 
         public static string createNewUserQuery(Users newUser)             //generates and returns query to create new User
         {
-            return "INSERT INTO "+tableU+" (userID, FullName, Password) VALUES (\"" + newUser.userID + "\", \"" + newUser.fullName + "\", \"" + newUser.password + "\")";
+            return "INSERT INTO "+tableU+" (userID, FullName, Password, signUpTimeStamp) VALUES (\"" + newUser.userID + "\", \"" + newUser.fullName + "\", \"" + newUser.password + "\",\""+newUser.signUpTimeStamp+ "\")";
         }
 
-        public static string createNewAdUserQuery(Users newAdUser, string CreatorAdminID)             /////////////////////////////////generates and returns query to create new adUser
+        public static string createNewAdUserQuery(Users newAdUser, string CreatorAdminID)             //generates and returns query to create new adUser
         {
-            return "INSERT INTO " + tableA + " (adminID, CreatorAdminID, adminName, adminPassword) VALUES (\"" + newAdUser.userID + "\", \"" + CreatorAdminID + "\", \"" + newAdUser.fullName + "\", \"" + newAdUser.password + "\")";
+            return "INSERT INTO " + tableA + " (adminID, CreatorAdminID, adminName, adminPassword, signUpTimeStamp, SignUpLogId) VALUES (\"" + newAdUser.userID + "\", \"" + CreatorAdminID + "\", \"" + newAdUser.fullName + "\", \"" + newAdUser.password + "\",\"" + newAdUser.signUpTimeStamp + "\",\"" + GlobalSessionClass.LogID + "\")";
         }
 
         public static string createNewFlightQuery(Flight newFlight)             //generates and returns query to create new flight
         {
-           return "INSERT INTO "+tableF+" (FlightCode, AdminId, Destination, AvailableSeats) VALUES (\""+newFlight.flightCode+ "\", \""+newFlight.adminID+"\", \"" + newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\")";
+           return "INSERT INTO "+tableF+" (FlightCode, AdminId, Destination, AvailableSeats, FcreationTimeStamp, FCreationLogID) VALUES (\""+newFlight.flightCode+ "\", \""+newFlight.adminID+"\", \"" + newFlight.flightDestination+"\", \""+ new string(newFlight.seats)+"\",\"" + newFlight.FcreationTimeStamp + "\",\"" + GlobalSessionClass.LogID + "\")";
         }
 
         public static string createNewBookingQuery(Booking newBooking)             //generates and returns query to create new booking
         {
-            return "INSERT INTO "+tableB+" (BookingID, UserID, Name, SeatNoIndex, FlightCode) VALUES (\""+newBooking.BookingID+ "\", \""+newBooking.userId+"\", \"" + newBooking.name+"\", \""+newBooking.seatNo+"\", \""+newBooking.flightcode+"\")";
+            return "INSERT INTO "+tableB+" (BookingID, UserID, Name, SeatNoIndex, FlightCode, BcreationTimeStamp, BCreationLogID) VALUES (\""+newBooking.BookingID+ "\", \""+newBooking.userId+"\", \"" + newBooking.name+"\", \""+newBooking.seatNo+"\", \""+newBooking.flightcode+ "\", \"" + newBooking.BcreationTimeStamp + "\",\"" + GlobalSessionClass.LogID + "\")";
         }
 
         public static string seatsDatabaseUpdateQuery(char[] seatsUpdated, string flightcode)             //generates and returns query to update seats of a flight

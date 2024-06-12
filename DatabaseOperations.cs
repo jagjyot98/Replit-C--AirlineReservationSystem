@@ -19,7 +19,9 @@ namespace Replit_C__AirlineReservationSystem
         static string connectionString = DBconsts.returnConnectionString();        //"Server=127.0.0.1;Database=airlinesys;Uid=root;Pwd=;"
         
         List<Flight> FTlist = new List<Flight>();
-        List<Booking> BKlist = new List<Booking>();   
+        List<Booking> BKlist = new List<Booking>();
+
+        GlobalSessionClass CurrentSession;//= new GlobalSessionClass();
 
         public List<Flight> readDatabaseFT()
         {
@@ -78,33 +80,27 @@ namespace Replit_C__AirlineReservationSystem
             return BKlist;
         }
 
-        //public List<Booking> readDatabaseUserBooKings()
-        //{
-        //    List<Booking> userBookings = new List<Booking> ();
+        public HashSet<string> readDatabaseLogIDs()    /////////////////////
+        {
+            HashSet<string> logIds = new HashSet<string>();
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
 
-        //    using (MySqlConnection connection = new MySqlConnection(connectionString))
-        //    {
-        //        connection.Open();
-        //        string query = DBconsts.readUserBookingsQuery();                         //Query to read data from flights database
-        //        MySqlCommand command = new MySqlCommand(query, connection);
+                connection.Open();
+                string query = DBconsts.readLogIDsQuery();                         //Query to read data from flights database
+                MySqlCommand command = new MySqlCommand(query, connection);
 
-        //        using (MySqlDataReader reader = command.ExecuteReader())
-        //        {
-        //            while (reader.Read())
-        //            {
-        //                Booking booking = new Booking();
-        //                booking.BookingID = reader.GetInt32(0);
-        //                booking.name = reader.GetString(1);
-        //                booking.seatNo = reader.GetInt32(2);
-        //                booking.flightcode = reader.GetString(3);
-                        
-        //                userBookings.Add(booking);                      //adding each row of database as flight object in flights' system collection
-        //            }
-        //        }
-        //        connection.Close();
-        //    }
-        //    return userBookings;
-        //}
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        logIds.Add(reader.GetString(0));
+                    }
+                }
+                connection.Close();
+            }
+            return logIds;
+        }
 
         public HashSet<int> readDatabaseBookingIDs()    /////////////////////
         {
@@ -208,8 +204,9 @@ namespace Replit_C__AirlineReservationSystem
                     //Users user = new Users();
                     //user.fullName = reader.GetString(1);
                     reader.Read();
-                    GlobalSessionClass.currentUserID = reader.GetString(0);
-                    GlobalSessionClass.currentUserName = reader.GetString(1);
+                    CurrentSession = new GlobalSessionClass(reader.GetString(0), reader.GetString(1), DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt"));
+
+                    //createNewLog();
                     connection.Close();
                     return "AG";
                 }
@@ -243,8 +240,8 @@ namespace Replit_C__AirlineReservationSystem
                         //Users user = new Users();
                         //user.fullName = reader.GetString(1);
                         reader.Read();
-                        GlobalSessionClass.currentUserID = reader.GetString(0);
-                        GlobalSessionClass.currentUserName = reader.GetString(1);
+                        CurrentSession = new GlobalSessionClass(reader.GetString(0), reader.GetString(1), DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt"));
+                        //createNewLog();
 
                         connection.Close();
                         return "UG";
@@ -255,6 +252,25 @@ namespace Replit_C__AirlineReservationSystem
                         return"UE";
                     }
                 }
+            }
+        }
+
+        public string createNewLog()
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = DBconsts.createNewLogQuery();          //calling query to create new flight in database
+                //Console.Write(query);
+                MySqlCommand command = new MySqlCommand(query, connection);
+
+                int rowsAffected = command.ExecuteNonQuery();
+                connection.Close();
+
+                if (rowsAffected > 0)
+                    return "LG";
+                else
+                    return "LE";
             }
         }
 
