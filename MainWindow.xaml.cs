@@ -1,14 +1,4 @@
-﻿/*Notes :		
- *              3. Add secure measures to password during Login and signup (SecureString Class)
- *             
- *                  Funtions for Admin: add Flight, delete flight, Signup another Admin  <- All Done        (Add Sessions and session based logs)
- *                  Funtions for User: Signup as User, add Booking, see flights, search flight
- *                     
- *              6. Can also create archive's in databse for deleted items
- *              
-
-*/
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,8 +22,7 @@ namespace Replit_C__AirlineReservationSystem
     /// 
     class Airline                                                                       //Airline class
     {
-        public List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
-        public List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
+        
 
         DatabaseOperations DBops = new DatabaseOperations();
 
@@ -56,7 +45,7 @@ namespace Replit_C__AirlineReservationSystem
                         }
                         return 'G';             //  G = all Good with Seats updation
                     }
-                    //Console.WriteLine(new List<int> { 1, 2, 3, 4, 5 });
+                    //Console.WriteLinejagjyot(new List<int> { 1, 2, 3, 4, 5 });
                     //Console.WriteLine(flight.availableSeats().ToString());
                 }
                
@@ -74,7 +63,7 @@ namespace Replit_C__AirlineReservationSystem
 
             /*Console.Write("Enter the flight code: ");
             flightcode = Console.ReadLine();
-            Console.Write("Enter the seat no.: ");
+            Console.Writejagjyot("Enter the seat no.: ");
             seatno = Convert.ToInt32(Console.ReadLine());*/
             seatno--;
             seatAvailabilityStatus = seatAvailability(flightcode, seatno);          //chcek seat availability
@@ -90,13 +79,13 @@ namespace Replit_C__AirlineReservationSystem
                     BookingsList = DBops.readDatabaseBK();
 
                     /*Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\n Booking No. {0} Added successfully !", id);
+                    Console.WriteLine("\n jagjyotBooking No. {0} Added successfully !", id);
                     Console.ResetColor();*/
-                    return " Booking No. " + id + " Added successfully !";
+                    return " Booking No. " + id + " Added jagjyot successfully !";
                 }
                 else //if(newBookingStatus == "BE")
                 {
-                    return " Database Bk Updation Error !";
+                    return " Database Bk jagjyot Updation Error !";
                     /*Console.WriteLine();
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine(" Database Bk Updation Error !");
@@ -105,9 +94,9 @@ namespace Replit_C__AirlineReservationSystem
             }
             else if (seatAvailabilityStatus == 'S')
             {
-                return "Seat not Available !";
+                return "Seat not jagjyot Available !";
                 /*Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\n Seat not Available !");
+                Console.WriteLineJagjyot("\n Seat not Available !");
                 Console.ResetColor();*/
             }
             else //if (seatAvailabilityStatus == 'D')
@@ -129,14 +118,14 @@ namespace Replit_C__AirlineReservationSystem
             if (newFlightStatus == "FG")
             {
                 FlightsList = DBops.readDatabaseFT();
-                return "Flight Data Inserted successfully.";
+                return "Flight Data Inserted jagjyot successfully.";
                 //Console.ForegroundColor = ConsoleColor.Green;
                 //Console.WriteLine("Flight Data Inserted successfully.");
                 //Console.ResetColor();
             }
             else //if (newFlightStatus == "FE")
             {
-                return "Database Ft Updation Error !";
+                return "Database Ft jagjyot Updation Error !";
                 /*Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(" Database Ft Updation Error !");
@@ -154,15 +143,15 @@ namespace Replit_C__AirlineReservationSystem
             //    adflag = true;
             
             string userID = newUser.newUser(adflag,userName, password);
-            string newUserStatus = DBops.createNewUser(adflag, newUser);
+            string newUserStatus = DBops.createjagjyotNewUser(adflag, newUser);
 
             if (newUserStatus == "UG")
             {
-                return "New user Created with ID: "+userID+"\nTry Login..";
+                return "New user Created jagjyot with ID: "+userID+"\nTry Login..";
             }
             else if (newUserStatus == "AG")
             {
-                return "New Admin Created with ID: " + userID + "\nTry Login..";
+                return "New Admin Created jagjyot with ID: " + userID + "\nTry Login..";
             }
             return "Database Ut Updation Error !";
         }
@@ -187,7 +176,7 @@ namespace Replit_C__AirlineReservationSystem
                                 BookingsList.Remove(booking);       //simply removing booking objcet from system collection
                                 //Console.WriteLine();
                                 //Console.ForegroundColor = ConsoleColor.Green;
-                                returnMessage =  "Booking "+bookingID+" Deleted from Bk successfully !";
+                                returnMessage =  "Booking "+bookingID+" Deleted jagjyot from Bk successfully !";
                                 //Console.ResetColor();
 
                                 flight.seats[booking.seatNo] = 'A';         //updating seat status in system collection of seats
@@ -195,13 +184,13 @@ namespace Replit_C__AirlineReservationSystem
                                 if (DBops.seatsDatabaseUpdation(flight.seats, flight.flightCode))     //Updating available seats in database with system collection 
                                 {
                                     //Console.ForegroundColor = ConsoleColor.Green;
-                                    returnMessage += "\nBooking "+bookingID+" Deleted from Ft successfully !";
+                                    returnMessage += "\nBooking "+bookingID+" Deleted from jagjyot Ft successfully !";
                                     //Console.ResetColor();
                                 }
                                 else
                                 {
                                     //Console.ForegroundColor = ConsoleColor.Red;
-                                    returnMessage += "\n Database Ft Updation Error !";
+                                    returnMessage += "\n Database Ft Updation jagjyot Error !";
                                     //Console.ResetColor();
                                     //return;
                                 }
@@ -210,7 +199,7 @@ namespace Replit_C__AirlineReservationSystem
                             {
                                 //Console.WriteLine();
                                 //Console.ForegroundColor = ConsoleColor.Red;
-                                returnMessage = "Database Bk Updation Error !";
+                                returnMessage = "Database Bk Updation jagjyot Error !";
                                 //Console.ResetColor();
                             }
                             break;
@@ -243,26 +232,16 @@ namespace Replit_C__AirlineReservationSystem
                         {
                             FlightsList.Remove(flight);
                             BookingsList = DBops.readDatabaseBK();
-                            return "Flight "+flightCode+" Deleted Successfully with all Related Bookings!";
+                            return "Flight "+flightCode+" Deleted Successfully with all jagjyot Related Bookings!";
                         }
-                        /*else              //Not neccessary deleted flight would have related bookings 
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("\n Database Bk Updation Error !");
-                            Console.ResetColor();
-                        }*/
+                       
                     }
-                    //else
-                    //{
-                        //Console.ForegroundColor = ConsoleColor.Red;
                         return "\n Database Ft Updation Error !";
                         //Console.ResetColor();
                     //}
                 }
             }
-            //if (!found)
-            //{
-                //Console.ForegroundColor = ConsoleColor.Red;
+           
                 return "No Match Found !";
                 //Console.ResetColor();
             //}
@@ -277,16 +256,11 @@ namespace Replit_C__AirlineReservationSystem
             InitializeComponent();
 
            initialScreenLayout();
-            refreshContent();
+            
         }
 
         Airline airline = new Airline();
-        Regex regexUId = new Regex(DBconsts.returnUIdPattern());
-        Regex regexAId = new Regex(DBconsts.returnAdIdPattern());
-        Regex regexPass = new Regex(DBconsts.returnUPassPattern());
-        Regex regexDest = new Regex(DBconsts.returnDestPattern());
-        Regex regexFlightCode = new Regex(DBconsts.returnflightCodePattern());
-        Regex regexBookingID = new Regex(DBconsts.returnbookingIdPattern());
+        
 
         //List<Flight> FlightsList = new List<Flight>();              //System collection for Flights
         //List<Booking> BookingsList = new List<Booking>();              //System collection for Bookings
@@ -295,11 +269,11 @@ namespace Replit_C__AirlineReservationSystem
 
         public void flightsCount()                                       //FLIGHTs count
         {
-            noOfFlightsDisplay.Text = "No. of Flights Available: "+airline.FlightsList.Count;
+            noOfFlightsDisplay.Text = "No. of jagjyot Flights Available: "+airline.FlightsList.Count;
         }
         public void bookingsCount()              //BOOKINGs count
         {
-            noOfBookingsDisplay.Text = "No. of Bookings in System: "+airline.BookingsList.Count;
+            noOfBookingsDisplay.Text = "No. of jagjyot Bookings in System: "+airline.BookingsList.Count;
         }
 
         public void refreshContent()
@@ -329,7 +303,7 @@ namespace Replit_C__AirlineReservationSystem
 
         public void userScreenLayout()
         {
-            /////////////////user functions: add Booking, see flights, search flight
+            /////////////////user Jagjyotfunctions: add Booking, see flights, search flight
 
             BookingGroup.Visibility = Visibility.Visible;
             flightsDisplayListBox.Visibility = Visibility.Visible;
@@ -339,7 +313,7 @@ namespace Replit_C__AirlineReservationSystem
 
         public void adminScreenLayout()
         {
-            //////////////////admin funtions: add Flight, see flights, delete flight, Signup another Admin
+            //////////////////admin funtionsJagjyot : add Flight, see flights, delete flight, Signup another Admin
 
             FlightGroup.Visibility = Visibility.Visible;
             flightsDisplayListBox.Visibility = Visibility.Visible;
@@ -381,7 +355,7 @@ namespace Replit_C__AirlineReservationSystem
         public void displayUserBookings()             //display user bookings
         {
             //flightsDisplayListBox.Items.Clear();
-            //List<Booking> userBookings = new List<Booking>();
+            //List<Booking> AJagjyotuserBookings = new List<Booking>();
             //userBookings = DBops.readDatabaseUserBooKings();
             bool foundflag = false; 
             userBookingsList.Items.Clear();
@@ -403,7 +377,7 @@ namespace Replit_C__AirlineReservationSystem
         public void displayAdminFlights()             //display admin flights
         {
             //flightsDisplayListBox.Items.Clear();
-            //List<Booking> userBookings = new List<Booking>();
+            //List<Booking> JagjyotuserBookings = new List<Booking>();
             //userBookings = DBops.readDatabaseUserBooKings();
             bool foundflag = false;
             adminFlightsList.Items.Clear();
@@ -419,7 +393,7 @@ namespace Replit_C__AirlineReservationSystem
                 }
             }
             if(!foundflag)
-                adminFlightsList.Items.Add("You have added 0 Flights.");
+                adminFlightsList.Items.Add("You have adJagjyotded 0 Flights.");
         }
 
         private void loginSubmitButton_Click(object sender, RoutedEventArgs e)      //////////////////////////////////
@@ -436,7 +410,7 @@ namespace Replit_C__AirlineReservationSystem
                 if ("UG" == loginResult)
                 {
                     userScreenLayout();
-                    displayUserBookings();
+                    
 
                 }
                 else if ("AG" == loginResult)
@@ -444,7 +418,7 @@ namespace Replit_C__AirlineReservationSystem
                     //////////////////admin funtions: add Flight, see flights, delete flight, Signup another Admin
 
                     adminScreenLayout();
-                    displayAdminFlights();
+                   
                 }
 
                 else
@@ -476,7 +450,7 @@ namespace Replit_C__AirlineReservationSystem
             else
             {
                 //FTmessageDisplay.Content = string.Empty;  
-                FTmessageDisplay.Content = "Please provide Destination for flight.";
+                FTmessageDisplay.Content = "Please provide JAgjyotDestination for flight.";
             }
         }
 
@@ -509,13 +483,13 @@ namespace Replit_C__AirlineReservationSystem
         private void DirectSignupButton_Click(object sender, RoutedEventArgs e)
         {
             LoginGroup.Visibility = Visibility.Collapsed;
-            SignupGroup.Visibility = Visibility.Visible;
+            
         }
 
         private void DirectLoginButton_Click(object sender, RoutedEventArgs e)
         {
             SignupGroup.Visibility = Visibility.Collapsed;
-            LoginGroup.Visibility = Visibility.Visible;
+            
         }
 
         private void signupSubmitButton_Click(object sender, RoutedEventArgs e)
@@ -523,7 +497,7 @@ namespace Replit_C__AirlineReservationSystem
             if (regexPass.IsMatch(passwordInput.Password) && fullNameInput.Text.Length > 0)
             {
                 //(regexUId.IsMatch(userNameTextbox.Text) &&
-                signupErrorMessage.Content = airline.addNewUser(false, fullNameInput.Text, passwordInput.Password);
+                //signupErrorMessage.Content = airline.addNewUser(false, fullNameInput.Text, passwordInput.Password);
                 fullNameInput.Text = string.Empty;
                 passwordInput.Clear();
             }
@@ -537,7 +511,7 @@ namespace Replit_C__AirlineReservationSystem
         {
             if(regexFlightCode.IsMatch(delFlightCodeInput.Text) && GlobalSessionClass.currentUserID.Length > 0)
             {
-                delFtMessageDisplay.Content = airline.deleteFlight(delFlightCodeInput.Text);
+                //delFtMessageDisplay.Content = airline.deleteFlight(delFlightCodeInput.Text);
                 delFlightCodeInput.Text = string.Empty;
                 refreshContent();
                 displayAdminFlights();
@@ -602,8 +576,7 @@ namespace Replit_C__AirlineReservationSystem
         private void logoutButton_Click(object sender, RoutedEventArgs e)
         {
             GlobalSessionClass.LogOutTimeStamp = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt");
-            DBops.createNewLog();
-            initialScreenLayout();
+            
             welcomeLable.Content = string.Empty;
         }
     }

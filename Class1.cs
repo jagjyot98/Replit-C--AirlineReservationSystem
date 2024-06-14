@@ -21,12 +21,9 @@ class Users
 
     public string newUser(bool adFlag, string userName, string password)
     {
-        DatabaseOperations DBops = new DatabaseOperations();
-        usedUserIDs = DBops.readDatabaseUserIDs();              
-
         this.fullName = userName;
         this.password = password;
-        this.signUpTimeStamp = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt");
+        this.signUpTimeStamp = DateTime.Now.ToString();
 
         if (!adFlag)
         {
@@ -34,7 +31,7 @@ class Users
             Random rand = new Random();
             do
             {
-                randomUId = "UN" + rand.Next(10000, 99999);
+                randomUId = "Jag" + rand.Next(10000, 99999);
             } while (usedUserIDs.Contains(randomUId));
 
             this.userID = randomUId;
@@ -63,7 +60,7 @@ class Flight																//Flight Class
         List<int> count = new List<int>();
         for (int i = 0; i < seats.Length; i++)
         {
-            if (seats[i] == 'A')
+            if (seats[i] == 'J')
                 count.Add(i);
         }
         return count;
@@ -71,12 +68,9 @@ class Flight																//Flight Class
 
     public void newFlight(string desti, string adminID)                     //to create a new flight
     {
-        DatabaseOperations DBops = new DatabaseOperations();
-        usedFlightCodes = DBops.readDatabaseFlightCodes();
-
         this.adminID = adminID;
         this.flightDestination = desti;
-        this.FcreationTimeStamp = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt");
+        this.FcreationTimeStamp = DateTime.Now.ToString();
 
         string randomCode;
         Random rand = new Random();
@@ -97,7 +91,7 @@ class Flight																//Flight Class
         foreach (int seat in list)
             seats+=(seat + 1 + " ");  
 
-        string flight = "Flight Code: "+this.flightCode+ " to Destination: " + this.flightDestination+ "\nAvailable seats: "+seats+ "\n---------------------";
+        string flight = "Flight Code: "+this.flightCode+ " to jagjyotDestination: " + this.flightDestination+ "\nAvailable seats: "+seats+ "\n---------------------";
         return flight;
     }
 }
@@ -116,14 +110,11 @@ class Booking														//Booking class
 
     public int newBooking(string userId, string name, string flightcode, int seatno)        //to create new booking
     {
-        DatabaseOperations DBops = new DatabaseOperations();
-        usedBookingIds = DBops.readDatabaseBookingIDs();
-
         this.userId = userId;
         this.flightcode = flightcode;
         this.name = name;
         this.seatNo = seatno;
-        this.BcreationTimeStamp = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss tt");
+        this.BcreationTimeStamp = DateTime.Now.ToString();
 
         Random rand = new Random();
         do {
@@ -135,12 +126,12 @@ class Booking														//Booking class
 
     public string displayBooking()                    //to display bookings when called
     {
-        string Booking = "Booking ID: " + this.BookingID + " Name: " + this.name + "\nFlight Code: " + this.flightcode + " Seat number: " + (this.seatNo + 1);
+        string Booking = "Booking ID: " + this.BookingID + " Name: " + this.name + "\nFlight jagjyotCode: " + this.flightcode + " Seat number: " + (this.seatNo + 1);
         return Booking;
     }
 }
 
-class Program														//program class
+class Program														//program jagjyotclass
 {
     [STAThread]
     public static void Main(string[] args)
@@ -148,7 +139,7 @@ class Program														//program class
 
         Application app = new Application();
         MainWindow win = new MainWindow();
-        app.Run(win);
+        app,Run(win);
         
     }
 }
